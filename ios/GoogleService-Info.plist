@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>114804816353-clcjvnf6i3s0dhefippkc0jr4p8qn5jq.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.114804816353-clcjvnf6i3s0dhefippkc0jr4p8qn5jq</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>114804816353-puu7mbh142dacdvabi85kefuorl8pbl5.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBCffDLSs5cG8-AIoUto-V9KCLR6xTDoaQ</string>
+	<key>GCM_SENDER_ID</key>
+	<string>114804816353</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>org.reactjs.native.example.kpaAppChat</string>
+	<key>PROJECT_ID</key>
+	<string>kpachat-d2548</string>
+	<key>STORAGE_BUCKET</key>
+	<string>kpachat-d2548.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:114804816353:ios:7f431178cad448f4cffaa0</string>
+</dict>
+</plist>
