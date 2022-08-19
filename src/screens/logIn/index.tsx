@@ -17,6 +17,7 @@ import ROUTE_NAMES from '../../router/routeNames';
 import {storeData} from '../../utiles/asynStorage';
 import EyeButton from '../../customComponents/eyeButton';
 import auth from '@react-native-firebase/auth'
+import { useDispatch } from 'react-redux';
 
 export default function LoginScreen() {
   const navigation = useNavigation<any>();
@@ -25,6 +26,7 @@ export default function LoginScreen() {
   const [password, setPassword] = React.useState('');
   const [passwordError, setPasswordError] = React.useState('');
   const [showPassword, setShowPassword] = React.useState(false);
+  const dispatch = useDispatch()
   const onpressRegister = () => {
     navigation.navigate(ROUTE_NAMES.SIGN_Up);
   };
@@ -35,9 +37,12 @@ export default function LoginScreen() {
   const onpress = () => {
     auth()
     .signInWithEmailAndPassword(phoneNoorEmail,password)
-    .then(() => {
-      console.log('User account created & signed in!');
-      navigation.navigate(ROUTE_NAMES.HOME)
+    .then((resp) => {
+      let uid=resp.user._user.uid;
+      console.log('first,uid',uid)
+      console.log('User account created & signed in!',uid);
+      navigation.navigate(ROUTE_NAMES.HOME, {uid})
+      dispatch({type:'uid', payload:uid})
     })
     .catch(error => {
       if (error.code === 'auth/email-already-in-use') {
@@ -228,3 +233,7 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
 });
+function dispatch(arg0: { ty: any; }) {
+  throw new Error('Function not implemented.');
+}
+

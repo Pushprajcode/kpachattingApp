@@ -32,8 +32,10 @@ import EyeButton from '../../customComponents/eyeButton';
 import ProfilePopUp from '../profilePop_Up';
 import auth from '@react-native-firebase/auth';
 import ROUTE_NAMES from '../../router/routeNames';
-
+import firestore from '@react-native-firebase/firestore';
+import {useDispatch, useSelector} from 'react-redux';
 export default function SignUp() {
+  const dispatch=useDispatch()
   const navigation = useNavigation<any>();
   const [name, setName] = useState('');
   const [errorName, setErrorName] = useState('');
@@ -45,12 +47,27 @@ export default function SignUp() {
   const [passwordError, setPasswordError] = React.useState('');
   const [showPassword, setShowPassword] = React.useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
+  
+
 
   const onpressSignUp = () => {
     auth()
       .createUserWithEmailAndPassword(phoneNoorEmail, password)
       .then(res => {
-        console.log('resp at Sucess UserCreate', res);
+          let uid= res.user._user.uid;
+          console.log(uid)
+
+          firestore()
+          .collection('Users')
+          .doc(uid).set({name:name}).then(res=>{console.log(res)}).catch(err=>console.log(err))
+        
+          // .add({
+          //   uid
+          // })
+    
+        
+        dispatch({type:'uid',payload:uid})
+ 
       })
       .catch(err => {
         console.log('Error UserCreate',phoneNoorEmail, password, err);
