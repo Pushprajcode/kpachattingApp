@@ -12,6 +12,7 @@ export const IMAGES = {
   IN_VISIBLE:require('../assets/images/invisible.png'),
   EDIT_PROFILE:require('../assets/images/pencil.png'),
   USER_IMAGE:require('../assets/images/userImage.png'),
-  LIKE_IMAGE:require('../assets/images/like.png')
+  LIKE_IMAGE:require('../assets/images/like.png'),
+  SETTING_IMAGE:require('../assets/images/settings.png')
 
 };

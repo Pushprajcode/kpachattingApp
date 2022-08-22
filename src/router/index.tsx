@@ -8,6 +8,7 @@ import ROUTE_NAMES from './routeNames';
 
 import Profile from '../screens/profile';
 import HomeScreen from '../screens/home';
+import Chatscreen from '../screens/chats/chatscreen';
 
 const stack = createNativeStackNavigator();
 
@@ -15,9 +16,7 @@ const NavigationScreen = () => {
   return (
     <NavigationContainer>
       <stack.Navigator
-        screenOptions={{
-          headerShown: false,
-        }}>
+       >
         {/* <stack.Screen
           name={ROUTE_NAMES.SPLASH_SCREEN}
           component={SplashScreen}
@@ -47,6 +46,10 @@ const NavigationScreen = () => {
           name={ROUTE_NAMES.COMPLETEPROFIL_POP_UP}
           component={ProfilePopUp}
         /> */}
+           <stack.Screen
+          name={ROUTE_NAMES.CHAT_SCREEN}
+          component={Chatscreen}
+        />
       </stack.Navigator>
       
     </NavigationContainer>

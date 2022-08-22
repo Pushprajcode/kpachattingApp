@@ -59,7 +59,7 @@ export default function SignUp() {
 
           firestore()
           .collection('Users')
-          .doc(uid).set({name:name}).then(res=>{console.log(res)}).catch(err=>console.log(err))
+          .doc(uid).set({name:name,email:phoneNoorEmail,uid:uid}).then(res=>{console.log(res)}).catch(err=>console.log(err))
         
           // .add({
           //   uid

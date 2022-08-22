@@ -1,81 +1,64 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React, { useCallback, useEffect, useState } from 'react'
-import { GiftedChat } from 'react-native-gifted-chat';
-import { useSelector } from 'react-redux'
-import  firestore  from '@react-native-firebase/firestore';
+
+import { StyleSheet, Text, View,FlatList, TouchableOpacity } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import firestore from '@react-native-firebase/firestore';
+import { useSelector } from 'react-redux';
+import { store } from '../../redux/reducer/store';
+import { useNavigation } from '@react-navigation/native';
+import ROUTE_NAMES from '../../router/routeNames';
 
 export default function Chats() {
-
-  const [messagesDetails, setmessagesDetails] = useState([]);
-  const [messages, setMessages]= useState([])
-  const {homeData} = useSelector(store=>store.SignUpReducer)
-  console.log('fjnj',homeData);
-  
- 
-   interface IMessage {
-    _id: string | number
-    text: string
-    createdAt: Date | number
-    
-    image?: string
-    video?: string
-    audio?: string
-    system?: boolean
-    sent?: boolean
-    received?: boolean
-    pending?: boolean
-
-  }
-
+  const navigation=useNavigation<any>()
+  const {uid}=useSelector(store=>store.LoginReducer)
+  console.log('jouidusekrni hai',uid)
+  const [user, setUser] = useState();
+  const getUsersDetails = async () => {
+    const querySnap = await firestore().collection('Users').where('uid','!=',uid).get()
+    console.log('datajoaaya', querySnap);
+    // const allUser=await firestore().collection()
+    const alluser = querySnap.docs.map(docSnap => docSnap.data());
+    console.log('allusersdetal', alluser);
+    setUser(alluser);
+  };
   useEffect(() => {
-    setmessagesDetails([
-      {
-        _id: 1,
-        text: 'Hello developer',
-        createdAt: new Date(),
-        user: {
-          _id: 2,
-          name: 'React Native',
-          avatar: 'https://placeimg.com/140/140/any',
-        },
-      },
-    ])
-  }, [])
-
-
-  const onSend = useCallback((messagesDetails = []) => {
-    setmessagesDetails(previousMessages => GiftedChat.append(previousMessages, messagesDetails))
-    messages.push(messagesDetails[0].text)
-    firestore().collection('Users').doc(homeData).set({
-      messagesDetails,
-      messages})
-  }, [messagesDetails])
-
-
+    getUsersDetails();
+  }, []);
+  const onrender = ({item}:any) => {
+    console.log('itmeme', item);
+    return(
+      <View>
+        <TouchableOpacity
+        // onPress={()=>{
+        //   navigation.navigate(ROUTE_NAMES.CHAT_SCREEN,{name:item?.name,uid:item.uid})
+        // }}
+        onPress={()=>
+          navigation.navigate(ROUTE_NAMES.CHAT_SCREEN,{Name:item?.name,Uid:item?.uid})}
+         style={styles.itemStyle}
+        >
+        <Text>
+          {item.name}
+        </Text>
+        </TouchableOpacity>
+       
+      </View>
+    )
+  }
   return (
-    <View style={styles.container}>
-      <Text>
-        {homeData}
-      </Text>
-
-{/* 
-      <GiftedChat
-            messages={messagesDetails}
-            onSend={messages => onSend(messages)}
-            user={{
-              _id: 1,
-            }}
-      
-            /> */}
-            
-
+    <View>
+      <FlatList data={user} renderItem={onrender}
+      keyExtractor={({item})=>item} />
     </View>
   )
 }
 
 const styles = StyleSheet.create({
-  container:{
-    flex:1,
-    
+  itemStyle:{
+    borderWidth:1,
+    borderColor:'red',
+    marginVertical:30
   }
 })
+
+function uid(arg0: string, arg1: string, uid: any) {
+  throw new Error('Function not implemented.');
+}

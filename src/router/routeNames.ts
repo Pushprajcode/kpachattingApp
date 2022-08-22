@@ -7,6 +7,7 @@ const ROUTE_NAMES={
     SIGN_SECOND:'LogInSecond',
     HOME:'HomeScreen',
     PROFILE:'Profile',
-    COMPLETEPROFIL_POP_UP:'ProfilePop'
+    COMPLETEPROFIL_POP_UP:'ProfilePop',
+    CHAT_SCREEN:'ChatScreen'
 }
 export default ROUTE_NAMES;

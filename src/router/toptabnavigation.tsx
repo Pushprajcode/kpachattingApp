@@ -28,17 +28,17 @@ export default function TopTabCategoryFn() {
         swipeEnabled: false,
       }}>
       <TopTabCategory.Screen
-        name="Women"
+        name="Cahts"
         component={Chats}
         options={TabarlabelStyle('chats')}
       />
       <TopTabCategory.Screen
-        name="Men"
+        name="Status"
         component={Status}
         options={TabarlabelStyle('STATUS')}
       />
         <TopTabCategory.Screen
-        name="Me"
+        name="Statusscreen"
         component={LoginScreen}
         options={TabarlabelStyle('STATUS')}
       />
