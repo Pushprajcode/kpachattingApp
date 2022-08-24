@@ -1,156 +1,87 @@
-// // import { StyleSheet, Text, View } from 'react-native'
-// // import React from 'react'
-
-// // export default function Chatscreen() {
-// //   return (
-// //     <View>
-// //       {/* <Text>chatscreen</Text> */}
-
-// //     </View>
-// //   )
-// // }
-
-// // const styles = StyleSheet.create({})
-// import { StyleSheet, Text, View } from 'react-native'
-// import React, { useCallback, useEffect, useState } from 'react'
-// import { GiftedChat } from 'react-native-gifted-chat';
-// import { useSelector } from 'react-redux'
-// import  firestore  from '@react-native-firebase/firestore';
-
-
-// export default function ChatScreen() {
-
-//   const [messagesDetails, setmessagesDetails] = useState([]);
-//   const [messages, setMessages]= useState([])
-//   // const {homeData} = useSelector(store=>store.SignUpReducer)
-//   // console.log('fjnj',homeData);
-
- 
-//    interface IMessage {
-//     _id: string | number
-//     text: string
-//     createdAt: Date | number
-    
-//     image?: string
-//     video?: string
-//     audio?: string
-//     system?: boolean
-//     sent?: boolean
-//     received?: boolean
-//     pending?: boolean
-
-//   }
-
-//   useEffect(() => {
-//     setmessagesDetails([
-//       {
-//         _id: 1,
-//         text: 'Hello developer',
-//         createdAt: new Date(),
-//         user: {
-//           _id: 2,
-//           name: 'React Native',
-//           avatar: 'https://placeimg.com/140/140/any',
-//         },
-//       },
-//     ])
-//   }, [])
-
-
-//   const onSend = useCallback((messagesDetails = []) => {
-//     setmessagesDetails(previousMessages => GiftedChat.append(previousMessages, messagesDetails))
-//     messages.push(messagesDetails[0].text)
-//     firestore().collection('Users').doc(homeData).set({
-//       messagesDetails,
-//       messages})
-//   }, [messagesDetails])
-
-
-//   return (
-//     <View style={styles.container}>
-//       {/* <Text>
-//         {homeData}
-//       </Text> */}
-
-// {/* 
-//       <GiftedChat
-//             messages={messagesDetails}
-//             onSend={messages => onSend(messages)}
-//             user={{
-//               _id: 1,
-//             }}
-      
-//             /> */}
-            
-
-//     </View>
-//   )
-// }
-
-// const styles = StyleSheet.create({
-//   container:{
-//     flex:1,
-    
-//   }
-// })
-import React, { useState, useCallback, useEffect } from 'react'
-import { Text, View } from 'react-native';
-import { GiftedChat } from 'react-native-gifted-chat'
-import { useSelector } from 'react-redux';
+import {Alert, StyleSheet} from 'react-native';
+import React, {useEffect, useState} from 'react';
+// import ActionType from '../../actions/actionType';
+import {GiftedChat} from 'react-native-gifted-chat';
+import {useDispatch, useSelector} from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
 
-export  default function ChatScreen({route}:any) {
-  // console.log('487347438435',route)
-  const {uid}=useSelector(store=>store.LoginReducer)
-  console.log('jouidusekrni hai',uid)
-  const {Name,Uid}=route.params;
-  console.log('first',Name,Uid)
-  //Uid jisse chat krni hai
+const Chat = ({route}: any) => {
+  const {uid} = useSelector((store: any) => store.LoginReducer);
+  console.log('jouidusekrni hai', uid);
 
+  const {Name, Uid} = route.params;
+  console.log('uid', uid);
+
+  console.log('first', Name, Uid);
   const [messages, setMessages] = useState([]);
-//   const WIDTH = 200 // or any number
-// const HEIGHT = 2000 // or any number
 
-// const loadingWrapper = getByTestId(Test_ID.LOADING.WRAPPER)
-// fireEvent(loadingWrapper, "layout", {
-//   nativeEvent: {
-//     layout: {
-//       width: WIDTH,
-//       height: HEIGHT,
-//     },
-//   },
-// });
+  const roomID = uid < Uid ? uid + Uid : Uid + uid;
+  /**
+   * @
+   */
   useEffect(() => {
-    setMessages([
-   
-    ])
-  }, [])
+    const updateMessage = firestore()
+      .collection('Chats')
+      .doc(roomID)
+      .onSnapshot(documentSnapshot => {
+        console.log('documentSnapshot', documentSnapshot);
 
+        if (documentSnapshot.exists) {
+          setMessages(documentSnapshot?.data()?.messsage);
+        }
+      });
+    return () => updateMessage();
+  }, []);
 
-  const onSend = (messagesArray:any) => {
-    console.log('first439847348',messagesArray)
-    const message=messagesArray[0]
-    const mymessage={
-      ...message,
-      sentBy:uid,
-      sentTo:Uid,
-    }
-    setMessages(previousMessages => GiftedChat.append(previousMessages,mymessage ))
-    const docid=Uid>uid?Uid+uid:uid+Uid
-    firestore().collection('Chats').doc(docid).collection('messages').add(mymessage)
-  }
+  /**
+   *
+   * @param message
+   */
+  const onSend = (message = []) => {
+    // dispatch({type: ActionType.CHAT_DETAILS, payload: {chatDetails: messages}});
+    //@ts-ignore
+    message[0].createdAt = new Date().getTime();
+    let newMessage = GiftedChat.append(messages, message);
+    setMessages(newMessage);
+    firestore()
+      .collection('Chats')
+      .doc(roomID)
+      .set({
+        messsage: newMessage,
+        uid: uid,
+      })
+      .then(response => {
+        console.log('first',response)
+      })
+      .catch(error => {});
+  };
 
   return (
-    <View style={{flex:1}}>
-      <Text>{Name}</Text>
-       <GiftedChat
+    <GiftedChat
+      scrollToBottomStyle={{borderStartColor: 'red', backgroundColor: 'white'}}
+      isTyping={true}
+      scrollToBottom
+      messagesContainerStyle={{backgroundColor: 'yellow'}}
+      onPress={() => {
+        Alert.alert('Bubble pressed');
+      }}
+      // showUserAvatar={true}
       messages={messages}
-      onSend={text => onSend(text)}
+      onSend={message => onSend(message)}
       user={{
-        _id:uid,
+        _id: uid,
+        // avatar: profileImage,
       }}
     />
-    </View>
-   
-  )
-}
+  );
+};
+
+export default React.memo(Chat);
+
+const styles = StyleSheet.create({
+  containerStyle: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});

@@ -1,4 +1,4 @@
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Image, Platform, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import STRINGS from '../../utiles/strings';
 import COLORS from '../../utiles/colors';
@@ -27,34 +27,39 @@ export default function Profile({route}: any) {
   };
   console.log('image', image);
   const imgPicker = () => {
-    // console.log('874894------>')
-    // ImageCropPicker.openPicker({
-    //   size: 1000,
-    //   width: 300,
-    //   height: 400,
-    //   mime: 'image/png',
-    //   cropping: true,
-    // })
+    console.log('874894------>')
+    ImageCropPicker.openPicker({
+      size: 1000,
+      width: 300,
+      height: 400,
+      mime: 'image/png',
+      cropping: true,
+    })
     ImageCropPicker.openPicker({
       width:300,
       height:400
     })
     .then(img => {
       console.log("resolved")
-        // settime(new Date().getTime());
-
-        // const reference = storage().ref(`img_${time}.jpg`);
-        // console.log('ref = ', reference);
-        // reference &&
-        //   reference
-        //     .putFile(img.path)
-        //     .then(res => console.log('putfile = ', res));
-         setimage(img.path);
+        settime(new Date().getTime());
+        const reference = storage().ref(`img_${time}.jpg`);
+        console.log('ref = ', reference);
+        reference &&
+          reference
+            .putFile(img.path)
+            .then(res => console.log('putfile = ', res));
+            if(Platform.OS=='ios'){
+              setimage(img.sourceURL)
+            }
+            else{
+              setimage(img.path);
+            }
+        
       })
       .catch(err => console.log(err))
-      // .catch(error => {
-      //   console.log('err', error);
-      // });
+      .catch(error => {
+        console.log('err', error);
+      });
   };
   // useEffect(() => {
   //   firestore()

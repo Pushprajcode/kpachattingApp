@@ -38,6 +38,8 @@ export default function LoginScreen() {
     auth()
     .signInWithEmailAndPassword(phoneNoorEmail,password)
     .then((resp) => {
+      console.log('fgvfd',resp);
+      
       let uid=resp.user._user.uid;
       console.log('first,uid',uid)
       console.log('User account created & signed in!',uid);

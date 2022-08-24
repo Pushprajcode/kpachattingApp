@@ -16,6 +16,7 @@ const NavigationScreen = () => {
   return (
     <NavigationContainer>
       <stack.Navigator
+      initialRouteName={ROUTE_NAMES.LON_IN_SCREEN}
        >
         {/* <stack.Screen
           name={ROUTE_NAMES.SPLASH_SCREEN}

@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "114804816353",
+    "project_id": "kpachat-d2548",
+    "storage_bucket": "kpachat-d2548.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:114804816353:android:0dcbeed6b801e0a3cffaa0",
+        "android_client_info": {
+          "package_name": "com.kpachattingapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "114804816353-8rqfdju3dg4v19l11g86e3lskc10u6g4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAy788-bOlxcwdK2j-CMXDnULn3RSeC7kM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "114804816353-8rqfdju3dg4v19l11g86e3lskc10u6g4.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "114804816353-clcjvnf6i3s0dhefippkc0jr4p8qn5jq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "org.reactjs.native.example.kpaAppChat"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -8,17 +8,17 @@ import Status from '../screens/status';
 
 const TopTabCategory = createMaterialTopTabNavigator();
 
-const TabarlabelStyle = (label: any) => {
-  return {
-    tabBarLabel: ({focused}: {focused: any}) => {
-      if (focused) {
-        return <Text style={{color: 'black', fontWeight: '900',marginTop:0}}>{label}</Text>;
-      } else {
-        return <Text style={{color: 'grey'}}>{label}</Text>;
-      }
-    },
-  };
-};
+// const TabarlabelStyle = (label: any) => {
+//   return {
+//     tabBarLabel: ({focused}: {focused: any}) => {
+//       if (focused) {
+//         return <Text style={{color: 'black', fontWeight: '900',marginTop:0}}>{label}</Text>;
+//       } else {
+//         return <Text style={{color: 'grey'}}>{label}</Text>;
+//       }
+//     },
+//   };
+// };
 export default function TopTabCategoryFn() {
   return (
     <TopTabCategory.Navigator
@@ -30,17 +30,17 @@ export default function TopTabCategoryFn() {
       <TopTabCategory.Screen
         name="Cahts"
         component={Chats}
-        options={TabarlabelStyle('chats')}
+        // options={TabarlabelStyle('chats')}
       />
       <TopTabCategory.Screen
         name="Status"
         component={Status}
-        options={TabarlabelStyle('STATUS')}
+        // options={TabarlabelStyle('STATUS')}
       />
         <TopTabCategory.Screen
         name="Statusscreen"
         component={LoginScreen}
-        options={TabarlabelStyle('STATUS')}
+        // options={TabarlabelStyle('STATUS')}
       />
    
     </TopTabCategory.Navigator>
