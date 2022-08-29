@@ -44,7 +44,8 @@ const STRINGS = {
   CONTINUE:'EDIT PROFILE',
   COMPLETE_PROFILE:'Complete your profile',
   CONGRATULATION:'CONGRATULATIONS',
-  SUCCESSFULLY:'Your account has been successfully created'
+  SUCCESSFULLY:'Your account has been successfully created',
+  PROFILE_COMPLETED:'Profile Completed'
   
   
 

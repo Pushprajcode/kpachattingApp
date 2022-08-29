@@ -1,17 +1,16 @@
-import React, {useRef, useEffect, useState} from 'react';
 import {AppState} from 'react-native';
-import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import SignUp from '../screens/signup';
-import SplashScreen from '../screens/splashScreen';
-import LoginScreen from '../screens/logIn';
 import ROUTE_NAMES from './routeNames';
-
+import {useSelector} from 'react-redux';
 import Profile from '../screens/profile';
 import HomeScreen from '../screens/home';
+import LoginScreen from '../screens/logIn';
+import SplashScreen from '../screens/splashScreen';
 import Chatscreen from '../screens/chats/chatscreen';
-import {useSelector} from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
+import React, {useRef, useEffect, useState} from 'react';
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 const stack = createNativeStackNavigator();
 
@@ -19,7 +18,6 @@ const NavigationScreen = () => {
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
   const {uid} = useSelector((store: any) => store.LoginReducer);
-  // const user = await firestore().collection('Users').doc(Uid).get();
 
   useEffect(() => {
     firestore().collection('Users').doc(uid).update({
@@ -50,7 +48,6 @@ const NavigationScreen = () => {
   return (
     <NavigationContainer>
       <stack.Navigator
-        //initialRouteName={ROUTE_NAMES.LON_IN_SCREEN}
         screenOptions={{
           headerShown: false,
         }}>
@@ -64,16 +61,8 @@ const NavigationScreen = () => {
           component={LoginScreen}
         />
         <stack.Screen name={ROUTE_NAMES.SIGN_Up} component={SignUp} />
-        {/* <stack.Screen
-          name={ROUTE_NAMES.HOME}
-          component={Home}
-        /> */}
         <stack.Screen name={ROUTE_NAMES.PROFILE} component={Profile} />
         <stack.Screen name={ROUTE_NAMES.HOME} component={HomeScreen} />
-        {/* <stack.Screen
-          name={ROUTE_NAMES.COMPLETEPROFIL_POP_UP}
-          component={ProfilePopUp}
-        /> */}
         <stack.Screen name={ROUTE_NAMES.CHAT_SCREEN} component={Chatscreen} />
       </stack.Navigator>
     </NavigationContainer>

@@ -2,37 +2,40 @@ import {useSelector} from 'react-redux';
 import COLORS from '../../utiles/colors';
 import React, {useEffect, useState, useRef} from 'react';
 import firestore from '@react-native-firebase/firestore';
-import {Alert, Image, StyleSheet, View, Text} from 'react-native';
+import {Alert, StyleSheet, View, Text, Image} from 'react-native';
 import Custombackbutton from '../../customComponents/custombackbutton';
-import {GiftedChat, Bubble, InputToolbar} from 'react-native-gifted-chat';
+import {GiftedChat, Bubble, InputToolbar, Send} from 'react-native-gifted-chat';
+import {normalize} from '../../utiles/dimensions';
+import {getStatusBarHeight} from 'react-native-status-bar-height';
+import {IMAGES} from '../../utiles/images';
 
 const Chat = ({route}: any) => {
   const {uid} = useSelector((store: any) => store.LoginReducer);
-  const {Name, Uid, status} = route.params;
+  const {Name, Uid, profileImage} = route.params;
   const [messages, setMessages] = useState([]);
   const [userStatus, setUserStatus] = useState(false);
   const roomID = uid < Uid ? uid + Uid : Uid + uid;
-
-/**
- * @des userStatus
- */
-  useEffect(()=>{
-    const updateStatus = firestore()
-    .collection('Users')
-    .doc(Uid)
-    .onSnapshot((doc: any) => {
-      let status = doc?.data()?.isActive;
-      setUserStatus(status)
-      console.log('whatgjj is stateus',status)
-
-      // setMessages(data1);
-    });
-  return () => updateStatus();},[])
-/**
- * @des update messages
- */
+  const [timer, setTimer] = useState(100);
+  const [isTyping, setIsTyping] = useState(false);
+  /**
+   * @des userStatus
+   */
   useEffect(() => {
-  const updateMessages =  firestore()
+    const updateStatus = firestore()
+      .collection('Users')
+      .doc(Uid)
+      .onSnapshot((doc: any) => {
+        let status = doc?.data()?.isActive;
+        setUserStatus(status);
+      });
+    return () => updateStatus();
+  }, []);
+
+  /**
+   * @des update messages
+   */
+  useEffect(() => {
+    const updateMessages = firestore()
       .collection('Chats')
       .doc(roomID)
       .collection('messages')
@@ -44,7 +47,7 @@ const Chat = ({route}: any) => {
         );
         setMessages(data);
       });
-      return ()=>updateMessages()
+    return () => updateMessages();
   }, []);
 
   /**
@@ -52,8 +55,6 @@ const Chat = ({route}: any) => {
    * @param message
    */
   const onSend = (message: any) => {
-    // dispatch({type: ActionType.CHAT_DETAILS, payload: {chatDetails: messages}});
-
     const mesg = message[0];
     const mymessage = {
       ...mesg,
@@ -71,66 +72,126 @@ const Chat = ({route}: any) => {
       .then()
       .catch((err: any) => console.log(err));
   };
+  const CustomHeader = () => {
+    console.log('fjefreriurituhtriuu89er', getStatusBarHeight());
+    return (
+      <View style={styles.backButtonView}>
+        <Custombackbutton />
+
+        <Image style={styles.profilepic} source={{uri: profileImage}} />
+        <View style={styles.onlineView}>
+          <Text style={styles.textName}>{Name}</Text>
+          {userStatus ? (
+            <Text style={styles.onlineText}>{'Online'}</Text>
+          ) : (
+            <Text style={styles.offlineText}>{'Ofline'}</Text>
+          )}
+        </View>
+      </View>
+    );
+  };
+
+  useEffect(() => {
+    const typingListener = firestore()
+      .collection('chats')
+      .doc(roomID)
+      .collection(Uid)
+      .doc('CurrentTypingState')
+      .onSnapshot(snapshot => {
+        setIsTyping(snapshot?.data()?.isTyping);
+      });
+
+    return () => typingListener();
+  }, []);
+
+  const _onInputTextChanged = (text: any) => {
+    if (text.length > 0) {
+      typingStatus(true);
+      clearTimeout(timer);
+
+      const newTimer = setTimeout(() => {
+        typingStatus(false);
+      }, 1000);
+
+      setTimer(newTimer);
+    }
+  };
+
+  const typingStatus = (bool: boolean) => {
+    firestore()
+      .collection('chats')
+      .doc(roomID)
+      .collection(uid)
+
+      .doc('CurrentTypingState')
+      .set({
+        isTyping: bool,
+      })
+      .then(() => {
+        console.log('Send success');
+      })
+      .catch(err => {
+        console.log('SendError', err);
+      });
+  };
 
   return (
     <View style={styles.mainContainerStyle}>
-      {/* <TouchableOpacity>
-        <Image
-        source={IMAGES.BACK_IMAGE}
-        style={{height:20,width:20,resizeMode:'contain'}}
+      <CustomHeader />
+      <View style={{flex: 1}}>
+        <GiftedChat
+        
+          onInputTextChanged={_onInputTextChanged}
+          scrollToBottomStyle={{
+            borderStartColor: COLORS.RED,
+            backgroundColor: COLORS.WHITE,
+          }}
+          isTyping={isTyping}
+          scrollToBottom
+          messagesContainerStyle={{backgroundColor: COLORS.WHITE}}
+          onPress={() => {
+            Alert.alert('Bubble pressed');
+          }}
+          messages={messages}
+          onSend={message => onSend(message)}
+          user={{
+            _id: uid,
+          }}
+          renderBubble={props => {
+            return (
+              <Bubble
+                {...props}
+                textStyle={{
+                  right: {
+                    color: COLORS.WHITE,
+                  },
+                }}
+                wrapperStyle={{
+                  left: {
+                    backgroundColor: 'red',
+                  },
+                  right: {
+                    backgroundColor: '#2b3595',
+                  },
+                }}
+              />
+            );
+          }}
+          renderInputToolbar={props => {
+            return <InputToolbar {...props} containerStyle={styles.toolbar} />;
+          }}
+          renderSend={props => {
+            return (
+              <Send {...props}>
+                <Image
+                  style={{transform: [{rotate: '180deg'}]}}
+                  source={IMAGES.BACK_IMAGE}
+                />
+              </Send>
+            );
+          }}
         />
-      </TouchableOpacity> */}
-      <Custombackbutton />
-      {/* <Text>Current state is: {appStateVisible}</Text> */}
-      <Text>{Name}</Text>
-
-      {userStatus ? (
-        <Text style={{color: 'red', marginLeft: 85}}>{'Online'}</Text>
-      ) : (
-        <Text style={{color: 'black', marginLeft: 85}}>{'Ofline'}</Text>
-      )}
-      <GiftedChat
-        scrollToBottomStyle={{
-          borderStartColor: 'red',
-          backgroundColor: 'white',
-        }}
-        isTyping={true}
-        scrollToBottom
-        messagesContainerStyle={{backgroundColor: COLORS.WHITE}}
-        onPress={() => {
-          Alert.alert('Bubble pressed');
-        }}
-        // showUserAvatar={true}
-        messages={messages}
-        onSend={message => onSend(message)}
-        user={{
-          _id: uid,
-          // avatar: profileImage,
-        }}
-        renderBubble={props => {
-          return (
-            <Bubble
-              {...props}
-              textStyle={{
-                right: {
-                  color: COLORS.BLACK,
-                },
-              }}
-              wrapperStyle={{
-                left: {
-                  backgroundColor: 'red',
-                },
-                right: {
-                  backgroundColor: '#e0d5ff',
-                },
-              }}
-            />
-          );
-        }}
-        renderInputToolbar={props => {
-          return <InputToolbar {...props} containerStyle={styles.toolbar} />;
-        }}
-      />
+      </View>
     </View>
   );
 };
@@ -142,15 +203,38 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.WHITE,
   },
-  containerStyle: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+  backButtonView: {
+    flexDirection: 'row',
+    marginTop: getStatusBarHeight(),
+    backgroundColor: 'aqua',
   },
+  profilepic: {
+    height: 50,
+    width: 50,
+    borderRadius: 50,
+    right: normalize(115),
+    marginTop: 10,
+  },
+
   toolbar: {
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
     backgroundColor: '#eaeeef',
-    borderTopColor: COLORS.DARK_GREY,
+    borderRadius: normalize(10),
+    marginHorizontal: normalize(10),
+    borderBottomWidth: normalize(1),
+  },
+  onlineText: {
+    color: COLORS.RED,
+    padding: 25,
+  },
+  onlineView: {
+    flexDirection: 'row',
+  },
+  offlineText: {
+    color: COLORS.BLACK,
+    padding: 25,
+  },
+  textName: {
+    color: COLORS.BLUE_MAGNETA,
+    padding: 25,
   },
 });

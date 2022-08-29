@@ -16,8 +16,8 @@ import CustomButton from '../../customComponents/customButton';
 import ROUTE_NAMES from '../../router/routeNames';
 import {storeData} from '../../utiles/asynStorage';
 import EyeButton from '../../customComponents/eyeButton';
-import auth from '@react-native-firebase/auth'
-import { useDispatch } from 'react-redux';
+import auth from '@react-native-firebase/auth';
+import {useDispatch} from 'react-redux';
 
 export default function LoginScreen() {
   const navigation = useNavigation<any>();
@@ -26,7 +26,7 @@ export default function LoginScreen() {
   const [password, setPassword] = React.useState('');
   const [passwordError, setPasswordError] = React.useState('');
   const [showPassword, setShowPassword] = React.useState(false);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const onpressRegister = () => {
     navigation.navigate(ROUTE_NAMES.SIGN_Up);
   };
@@ -36,30 +36,24 @@ export default function LoginScreen() {
   };
   const onpress = () => {
     auth()
-    .signInWithEmailAndPassword(phoneNoorEmail,password)
-    .then((resp) => {
-      let uid=resp.user._user.uid;
-      navigation.navigate(ROUTE_NAMES.HOME,{uid})
-      dispatch({type:'uid', payload:uid})
-      console.log('response',resp)
-    })
-    .catch(error => {
-      if (error.code === 'auth/email-already-in-use') {
-        console.log('That email address is already in use!');
-      }
-  
-      if (error.code === 'auth/invalid-email') {
-        console.log('That email address is invalid!');
-      }
-  
-      console.error(error);
-    });
-    // if (phoneNoorEmail == '' && password == '') {
-    //   toastfun();
-    // } else {
-    //   emailPasswordAuth(phoneNoorEmail, password);
-    //   storeData(phoneNoorEmail);
-    // }
+      .signInWithEmailAndPassword(phoneNoorEmail, password)
+      .then(resp => {
+        let uid = resp.user._user.uid;
+        navigation.navigate(ROUTE_NAMES.HOME, {uid});
+        dispatch({type: 'uid', payload: uid});
+        console.log('response', resp);
+      })
+      .catch(error => {
+        if (error.code === 'auth/email-already-in-use') {
+          console.log('That email address is already in use!');
+        }
+
+        if (error.code === 'auth/invalid-email') {
+          console.log('That email address is invalid!');
+        }
+
+        console.error(error);
+      });
   };
   const onChangeTextPhoneorEmail = (value: any) => {
     if (isFinite(value) == true) {
@@ -110,10 +104,10 @@ export default function LoginScreen() {
         <Text style={styles.validErrorStyle}>
           {passwordError ? passwordError : null}
         </Text>
-        <TouchableOpacity onPress={()=>{
-          navigation.navigate(ROUTE_NAMES.PROFILE);
-
-        }}>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate(ROUTE_NAMES.PROFILE);
+          }}>
           <Text style={styles.fogetText}>{STRINGS.FORGET_PASSWORD}</Text>
         </TouchableOpacity>
       </View>
@@ -232,7 +226,6 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
 });
-function dispatch(arg0: { ty: any; }) {
+function dispatch(arg0: {ty: any}) {
   throw new Error('Function not implemented.');
 }
-

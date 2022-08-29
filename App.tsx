@@ -8,10 +8,6 @@ import { PersistGate } from "redux-persist/integration/react";
 const App=()=>{
   return(
    
-    //   <NavigationScreen/>
-    //   <Provider store={store}> 
-   
-    // </Provider>
     <Provider
     store={store}>
       <PersistGate persistor={persistor}>

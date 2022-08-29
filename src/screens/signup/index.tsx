@@ -2,10 +2,8 @@ import {
   StyleSheet,
   Text,
   View,
-  TouchableOpacity,
   Image,
   ScrollView,
-  Keyboard,
 } from 'react-native';
 import React, {useState} from 'react';
 import CustomTextInput from '../../customComponents/customTextInput';
@@ -22,12 +20,6 @@ import {
 } from '../../utiles/validation';
 import CustomButton from '../../customComponents/customButton';
 import {useNavigation} from '@react-navigation/native';
-// import {createUser} from '../../utiles/commonfunction';
-// import ROUTE_NAMES from '../../router/routeNames';
-// import {storeData} from '../../utiles/asynStorage';
-// import {submitUserData} from '../../utiles/commonfunction';
-// import {updateStore} from '../../utiles/commonfunction';
-// import {deleteStore} from '../../utiles/commonfunction';
 import EyeButton from '../../customComponents/eyeButton';
 import ProfilePopUp from '../profilePop_Up';
 import auth from '@react-native-firebase/auth';
@@ -52,44 +44,20 @@ export default function SignUp() {
       .createUserWithEmailAndPassword(phoneNoorEmail, password)
       .then(res => {
         let uid = res.user._user.uid;
-        console.log('AgterSignUp UID__________________',uid);
+        console.log('AgterSignUp UID__________________', uid);
         firestore()
           .collection('Users')
           .doc(uid)
-          .set({name: name, email: phoneNoorEmail, uid: uid,isActive:false})
+          .set({name: name, email: phoneNoorEmail, uid: uid, isActive: false})
           .then(res => {
             console.log(res);
           })
           .catch(err => console.log(err));
-        // .add({
-        //   uid
-        // })
-
         dispatch({type: 'uid', payload: uid});
       })
       .catch(err => {
         console.log('Error UserCreate', phoneNoorEmail, password, err);
       });
-
-    // // submitUserData(phoneNoorEmail, password, name);
-    // // updateStore(phoneNoorEmail, password);
-    // // deleteStore();
-    // // navigation.navigate(ROUTE_NAMES.PROFILE)
-
-    // // Keyboard.dismiss();
-    // if (
-    //   name != '' &&
-    //   phoneNoorEmail == '' &&
-    //   passwordError == '' &&
-    //   confirmPasswordError == ''
-    // ) {
-    //   navigation.navigate(ROUTE_NAMES.PROFILE);
-    // }
-    //navigation.navigate(ROUTE_NAMES.PROFILE)
-    //  <ProfilePopUp/>
-
-    // setModalVisible(!isModalVisible)
-    // navigation.navigate(ROUTE_NAMES.LON_IN_SCREEN)
     navigation.navigate(ROUTE_NAMES.PROFILE);
   };
 
@@ -178,15 +146,6 @@ export default function SignUp() {
           style={styles.buttonStyle}
           label={STRINGS.SIGN_UP}
         />
-        {/* <View style={styles.userView}>
-          <Text>{STRINGS.NEW_USER}</Text>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate(ROUTE_NAMES.LON_IN_SCREEN);
-            }}>
-            <Text style={styles.signStyle}>{STRINGS.SIGIN}</Text>
-          </TouchableOpacity>
-        </View> */}
       </View>
     </ScrollView>
   );

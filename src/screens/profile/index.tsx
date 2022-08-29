@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import STRINGS from '../../utiles/strings';
 import COLORS from '../../utiles/colors';
 import {normalize} from '../../utiles/dimensions';
@@ -17,33 +17,34 @@ import CustomButton from '../../customComponents/customButton';
 import {useNavigation} from '@react-navigation/native';
 import ROUTE_NAMES from '../../router/routeNames';
 import ImageCropPicker from 'react-native-image-crop-picker';
-import { useDispatch } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import Custombackbutton from '../../customComponents/custombackbutton';
+import firestore from '@react-native-firebase/firestore';
+
 
 export default function Profile({route}: any) {
-  const dispatch=useDispatch<any>()
+  const dispatch = useDispatch<any>();
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [time, settime] = useState(new Date().getTime());
   const reference = storage().ref(`img_${time}.jpg`);
   const navigation = useNavigation<any>();
   const [image, setimage] = useState('');
+  const {uid} = useSelector((store: any) => store.LoginReducer);
   const onpress = () => {
-    // deleteStore();
     navigation.navigate(ROUTE_NAMES.LON_IN_SCREEN);
   };
-  <Custombackbutton style={styles.backButtonStyle}/>
+  <Custombackbutton style={styles.backButtonStyle} />;
   const imageUploadstore = (imagePath: any) => {
-    console.log('reaches', imagePath);
     reference
       .putFile(imagePath)
       .then(res => {
         console.log('uploaded', res);
-        reference.getDownloadURL().then(res=> {
-          console.log('url====', res);
-          dispatch({type:'sendurl',payload:res})
-         
+        reference.getDownloadURL().then(res => { firestore().collection('Users').doc(uid).update({
+          profileImage:res
         })
+          
+        });
       })
       .catch(err => {
         console.log('error upload', err);
@@ -51,10 +52,10 @@ export default function Profile({route}: any) {
   };
   console.log('image', image);
   const imgPicker = () => {
-    console.log('874894------>');
     ImageCropPicker.openPicker({
       width: 300,
-      height: 400,
+      height: 300,
+
     })
       .then(img => {
         imageUploadstore(img.path);
@@ -78,19 +79,8 @@ export default function Profile({route}: any) {
           <Image style={styles.userImgStyle} source={IMAGES.USER} />
         )}
 
-        <TouchableOpacity
-          onPress={imgPicker}
-          style={{
-            backgroundColor: 'white',
-            padding: 7,
-            borderRadius: 50,
-            top: 63,
-            right: 40,
-          }}>
-          <Image
-            style={{height: 20, width: 20, tintColor: COLORS.LIGHT_BLUE}}
-            source={IMAGES.EDIT_PROFILE}
-          />
+        <TouchableOpacity onPress={imgPicker} style={styles.imgpickerpress}>
+          <Image style={styles.img} source={IMAGES.EDIT_PROFILE} />
         </TouchableOpacity>
       </View>
       <View style={styles.textinputView}>
@@ -114,7 +104,7 @@ export default function Profile({route}: any) {
         />
         <CustomButton
           style={styles.buttonStyle}
-          label={STRINGS.LOGOUT}
+          label={STRINGS.PROFILE_COMPLETED}
           onPress={onpress}
         />
       </View>
@@ -125,12 +115,11 @@ export default function Profile({route}: any) {
 const styles = StyleSheet.create({
   containerView: {
     flex: 1,
-    backgroundColor:COLORS.WHITE
+    backgroundColor: COLORS.WHITE,
   },
-  backButtonStyle:{
-   backgroundColor:'red',
-   alignSelf:'flex-end'
-
+  backButtonStyle: {
+    backgroundColor: 'red',
+    alignSelf: 'flex-end',
   },
   profileView: {
     borderTopLeftRadius: 200,
@@ -149,8 +138,19 @@ const styles = StyleSheet.create({
     height: normalize(150),
     width: normalize(150),
     alignSelf: 'center',
-    borderRadius: normalize(200),
-    resizeMode: 'contain',
+    borderRadius: normalize(75),
+    resizeMode: 'cover',
+  },
+  img: {height: 20,
+     width: 20,
+     tintColor: COLORS.LIGHT_BLUE},
+  imgpickerpress: {
+    backgroundColor: 'white',
+    padding: 7,
+   borderRadius: 50,
+   top: 63,
+   right: 45,
+   borderColor:COLORS.LIGHT_BLUE,borderWidth:1
   },
   editStyle: {
     height: normalize(20),
