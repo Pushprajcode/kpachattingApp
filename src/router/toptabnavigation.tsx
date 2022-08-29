@@ -23,12 +23,25 @@ export default function TopTabCategoryFn() {
   return (
     <TopTabCategory.Navigator
       screenOptions={{
-        tabBarInactiveTintColor: 'blue',
-        tabBarIndicatorStyle: {backgroundColor: 'black'},
-        swipeEnabled: false,
+        
+        tabBarInactiveTintColor: 'white',
+        tabBarActiveTintColor:'#3B0000',
+        tabBarIndicatorStyle: {backgroundColor: 'transparent'},
+          tabBarContentContainerStyle:{
+            backgroundColor:'#43919B',
+            borderColor:'#247881',
+            borderStartWidth:2,
+            borderEndWidth:2,
+          },
+          tabBarLabelStyle:{
+            fontSize:14,
+            fontWeight:'700'
+          }
+
+
       }}>
       <TopTabCategory.Screen
-        name="Cahts"
+        name="Chats"
         component={Chats}
         // options={TabarlabelStyle('chats')}
       />
@@ -38,7 +51,7 @@ export default function TopTabCategoryFn() {
         // options={TabarlabelStyle('STATUS')}
       />
         <TopTabCategory.Screen
-        name="Statusscreen"
+        name="call"
         component={LoginScreen}
         // options={TabarlabelStyle('STATUS')}
       />

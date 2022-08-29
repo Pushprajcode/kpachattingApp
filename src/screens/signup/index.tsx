@@ -35,7 +35,7 @@ import ROUTE_NAMES from '../../router/routeNames';
 import firestore from '@react-native-firebase/firestore';
 import {useDispatch, useSelector} from 'react-redux';
 export default function SignUp() {
-  const dispatch=useDispatch()
+  const dispatch = useDispatch();
   const navigation = useNavigation<any>();
   const [name, setName] = useState('');
   const [errorName, setErrorName] = useState('');
@@ -47,30 +47,28 @@ export default function SignUp() {
   const [passwordError, setPasswordError] = React.useState('');
   const [showPassword, setShowPassword] = React.useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
-  
-
-
   const onpressSignUp = () => {
     auth()
       .createUserWithEmailAndPassword(phoneNoorEmail, password)
       .then(res => {
-          let uid= res.user._user.uid;
-          console.log(uid)
-
-          firestore()
+        let uid = res.user._user.uid;
+        console.log('AgterSignUp UID__________________',uid);
+        firestore()
           .collection('Users')
-          .doc(uid).set({name:name,email:phoneNoorEmail,uid:uid}).then(res=>{console.log(res)}).catch(err=>console.log(err))
-        
-          // .add({
-          //   uid
-          // })
-    
-        
-        dispatch({type:'uid',payload:uid})
- 
+          .doc(uid)
+          .set({name: name, email: phoneNoorEmail, uid: uid,isActive:false})
+          .then(res => {
+            console.log(res);
+          })
+          .catch(err => console.log(err));
+        // .add({
+        //   uid
+        // })
+
+        dispatch({type: 'uid', payload: uid});
       })
       .catch(err => {
-        console.log('Error UserCreate',phoneNoorEmail, password, err);
+        console.log('Error UserCreate', phoneNoorEmail, password, err);
       });
 
     // // submitUserData(phoneNoorEmail, password, name);
@@ -92,7 +90,7 @@ export default function SignUp() {
 
     // setModalVisible(!isModalVisible)
     // navigation.navigate(ROUTE_NAMES.LON_IN_SCREEN)
-    navigation.navigate(ROUTE_NAMES.PROFILE)
+    navigation.navigate(ROUTE_NAMES.PROFILE);
   };
 
   const onChangeTextPhoneorEmail = (value: any) => {

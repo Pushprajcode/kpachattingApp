@@ -13,6 +13,7 @@ export const IMAGES = {
   EDIT_PROFILE:require('../assets/images/pencil.png'),
   USER_IMAGE:require('../assets/images/userImage.png'),
   LIKE_IMAGE:require('../assets/images/like.png'),
-  SETTING_IMAGE:require('../assets/images/settings.png')
+  SETTING_IMAGE:require('../assets/images/settings.png'),
+  BACK_IMAGE:require('../assets/images/BackImage.png'),
 
 };

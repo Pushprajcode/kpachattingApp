@@ -38,13 +38,10 @@ export default function LoginScreen() {
     auth()
     .signInWithEmailAndPassword(phoneNoorEmail,password)
     .then((resp) => {
-      console.log('fgvfd',resp);
-      
       let uid=resp.user._user.uid;
-      console.log('first,uid',uid)
-      console.log('User account created & signed in!',uid);
-      navigation.navigate(ROUTE_NAMES.HOME, {uid})
+      navigation.navigate(ROUTE_NAMES.HOME,{uid})
       dispatch({type:'uid', payload:uid})
+      console.log('response',resp)
     })
     .catch(error => {
       if (error.code === 'auth/email-already-in-use') {

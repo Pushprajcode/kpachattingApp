@@ -1,4 +1,11 @@
-import {Image, Platform, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  Image,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import STRINGS from '../../utiles/strings';
 import COLORS from '../../utiles/colors';
@@ -10,69 +17,55 @@ import CustomButton from '../../customComponents/customButton';
 import {useNavigation} from '@react-navigation/native';
 import ROUTE_NAMES from '../../router/routeNames';
 import ImageCropPicker from 'react-native-image-crop-picker';
-
+import { useDispatch } from 'react-redux';
+import Custombackbutton from '../../customComponents/custombackbutton';
 
 export default function Profile({route}: any) {
+  const dispatch=useDispatch<any>()
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [time, settime] = useState(new Date().getTime());
-  // console.log('routes',route)
-  // console.log('_______________',route.params.user._user.uid)
-  // const id = route.params.user._user.uid;
+  const reference = storage().ref(`img_${time}.jpg`);
   const navigation = useNavigation<any>();
   const [image, setimage] = useState('');
   const onpress = () => {
     // deleteStore();
     navigation.navigate(ROUTE_NAMES.LON_IN_SCREEN);
   };
-  console.log('image', image);
-  const imgPicker = () => {
-    console.log('874894------>')
-    ImageCropPicker.openPicker({
-      size: 1000,
-      width: 300,
-      height: 400,
-      mime: 'image/png',
-      cropping: true,
-    })
-    ImageCropPicker.openPicker({
-      width:300,
-      height:400
-    })
-    .then(img => {
-      console.log("resolved")
-        settime(new Date().getTime());
-        const reference = storage().ref(`img_${time}.jpg`);
-        console.log('ref = ', reference);
-        reference &&
-          reference
-            .putFile(img.path)
-            .then(res => console.log('putfile = ', res));
-            if(Platform.OS=='ios'){
-              setimage(img.sourceURL)
-            }
-            else{
-              setimage(img.path);
-            }
-        
+  <Custombackbutton style={styles.backButtonStyle}/>
+  const imageUploadstore = (imagePath: any) => {
+    console.log('reaches', imagePath);
+    reference
+      .putFile(imagePath)
+      .then(res => {
+        console.log('uploaded', res);
+        reference.getDownloadURL().then(res=> {
+          console.log('url====', res);
+          dispatch({type:'sendurl',payload:res})
+         
+        })
       })
-      .catch(err => console.log(err))
-      .catch(error => {
-        console.log('err', error);
+      .catch(err => {
+        console.log('error upload', err);
       });
   };
-  // useEffect(() => {
-  //   firestore()
-  //     .collection('users')
-  //     .doc(id)
-  //     .get()
-  //     .then((res: any) => {
-  //       console.log('emailu32u4', res);
-  //       setEmail(res._data.email);
-  //       setName(res._data.name);
-  //     });
-  // });
-
+  console.log('image', image);
+  const imgPicker = () => {
+    console.log('874894------>');
+    ImageCropPicker.openPicker({
+      width: 300,
+      height: 400,
+    })
+      .then(img => {
+        imageUploadstore(img.path);
+        if (Platform.OS == 'ios') {
+          setimage(img.sourceURL);
+        } else {
+          setimage(img.path);
+        }
+      })
+      .catch(err => console.log(err));
+  };
   return (
     <View style={styles.containerView}>
       <Text style={styles.profileText}>{STRINGS.PROFILE}</Text>
@@ -132,14 +125,16 @@ export default function Profile({route}: any) {
 const styles = StyleSheet.create({
   containerView: {
     flex: 1,
-    // backgroundColor: COLORS.LIGHT_BLUE,
-    backgroundColor: COLORS.WHITE,
+    backgroundColor:COLORS.WHITE
+  },
+  backButtonStyle:{
+   backgroundColor:'red',
+   alignSelf:'flex-end'
+
   },
   profileView: {
-    // backgroundColor: COLORS.LIGHT_BLUE,
     borderTopLeftRadius: 200,
     borderBottomStartRadius: 200,
-    //  borderTopRightRadius: 280,
     height: normalize(222),
     flexDirection: 'row',
     alignItems: 'center',
@@ -147,7 +142,6 @@ const styles = StyleSheet.create({
   },
   profileText: {
     textAlign: 'center',
-    //marginTop: normalize(50),
     fontSize: normalize(20),
     color: COLORS.LIGHT_BLUE,
   },

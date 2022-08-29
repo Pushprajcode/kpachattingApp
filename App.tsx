@@ -1,7 +1,8 @@
 import NavigationScreen from "./src/router";
 import React from "react";
 import { Provider } from "react-redux";
-import { store } from "./src/redux/reducer/store";
+import { persistor, store } from "./src/redux/reducer/store";
+import { PersistGate } from "redux-persist/integration/react";
 
 
 const App=()=>{
@@ -13,7 +14,9 @@ const App=()=>{
     // </Provider>
     <Provider
     store={store}>
+      <PersistGate persistor={persistor}>
       <NavigationScreen/>
+      </PersistGate>
 
     </Provider>
   
