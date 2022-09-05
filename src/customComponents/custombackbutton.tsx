@@ -4,25 +4,20 @@ import {useNavigation} from '@react-navigation/native';
 import {IMAGES} from '../utiles/images';
 
 export default function Custombackbutton(props: any) {
-  const {style} = props;
+  const {style, onPress} = props;
   const navigation = useNavigation<any>();
   return (
-    <View style={styles.containerView}>
-      <TouchableOpacity onPress={() => navigation.goBack()}>
-        <Image style={[styles.backimg, style]} source={IMAGES.BACK_IMAGE} />
-      </TouchableOpacity>
-    </View>
+    <TouchableOpacity onPress={onPress}>
+      <Image style={[styles.backimg, style]} source={IMAGES.BACK_IMAGE} />
+    </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
-  containerView: {
-    flex: 1,
-  },
   backimg: {
     height: 30,
     width: 30,
-    marginTop:20,
+    marginTop: 20,
     marginLeft: 10,
   },
 });

@@ -25,13 +25,12 @@ export default function Profile({route}: any) {
   const {name, phoneNoorEmail} = route.params;
   const dispatch = useDispatch<any>();
   const [email, setEmail] = useState('');
-  // const [name, setName] = useState('');
   const [phone, setphone] = useState('');
   const [time, settime] = useState(new Date().getTime());
   const reference = storage().ref(`img_${time}.jpg`);
   const navigation = useNavigation<any>();
   const [image, setimage] = useState<any>('');
-  const {uid} = useSelector((store: any) => store.LoginReducer);
+  const {loginUserId} = useSelector((store: any) => store.SignUpReducer);
   const onpress = () => {
     if (name != '' && phoneNoorEmail != '' && phone != '') {
       navigation.navigate(ROUTE_NAMES.HOME, {});
@@ -42,9 +41,8 @@ export default function Profile({route}: any) {
     reference
       .putFile(imagePath)
       .then(res => {
-        console.log('uploaded', res);
         reference.getDownloadURL().then(res => {
-          firestore().collection('Users').doc(uid).update({
+          firestore().collection('Users').doc(loginUserId).update({
             profileImage: res,
           });
         });

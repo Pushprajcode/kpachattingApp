@@ -14,16 +14,22 @@ import ROUTE_NAMES from '../../router/routeNames';
 import COLORS from '../../utiles/colors';
 import {IMAGES} from '../../utiles/images';
 import {normalize} from '../../utiles/dimensions';
-import {Colors} from 'react-native/Libraries/NewAppScreen';
 
 export default function Chats({route}: any) {
   const navigation = useNavigation<any>();
-  const {uid} = useSelector((store: any) => store.LoginReducer);
-  const [user, setUser] = useState();
+  const {loginUserId} = useSelector((store: any) => store.SignUpReducer);
+  const uid = loginUserId.loginUserId;
+  console.log('w345tygfvdcsx', uid);
+  const [user, setUser] = useState<any>();
   const getUsersDetails = async () => {
-    const querySnap = await firestore().collection('Users').get();
-    const alluser: any = querySnap.docs.map(docSnap => docSnap.data());
-    setUser(alluser);
+    const querySnap = firestore()
+      .collection('Users')
+      .doc(uid)
+      .collection('Inbox');
+    querySnap.onSnapshot(onchange => {
+      const allusers = onchange.docs.map(item => item.data());
+      setUser(allusers);
+    });
   };
   useEffect(() => {
     getUsersDetails();
@@ -37,8 +43,8 @@ export default function Chats({route}: any) {
         style={styles.detailsView}
         onPress={() =>
           navigation.navigate(ROUTE_NAMES.CHAT_SCREEN, {
-            Name: item?.name,
-            Uid: item?.uid,
+            Name: item?.Name,
+            Uid: item?.id,
             status: item?.isActive,
             profileImage: item?.profileImage,
           })
@@ -46,11 +52,12 @@ export default function Chats({route}: any) {
         <View style={styles.profileImageView}>
           <Image
             style={{height: '100%', width: '100%'}}
-            source={{uri: item.profileImage}}
+            source={{uri: item?.profileImage}}
           />
         </View>
         <View style={styles.userInfoView}>
-          <Text style={styles.nameTextStyle}>{item.name}</Text>
+          <Text style={styles.nameTextStyle}>{item?.Name}</Text>
+          <Text>{item?.lastMessage?.text}</Text>
         </View>
       </TouchableOpacity>
     ) : null;
@@ -67,6 +74,14 @@ export default function Chats({route}: any) {
         keyExtractor={({item}) => item}
         ItemSeparatorComponent={itemSeparator}
       />
+      <View>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate(ROUTE_NAMES.ALLUSER_SCREEN);
+          }}>
+          <Image style={styles.allUser} source={IMAGES.ALLUSER_IMAGE} />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -82,7 +97,7 @@ const styles = StyleSheet.create({
   },
   main: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: COLORS.WHITE,
   },
   textName: {
     fontSize: 14,
@@ -123,5 +138,11 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.DARK_GREY,
     opacity: normalize(0.5),
     marginHorizontal: normalize(6),
+  },
+  allUser: {
+    height: normalize(30),
+    width: normalize(30),
+    marginLeft: normalize(320),
+    bottom: 30,
   },
 });

@@ -13,6 +13,7 @@ import {firebase} from '@react-native-firebase/storage';
 import {useNavigation} from '@react-navigation/native';
 import ROUTE_NAMES from '../../router/routeNames';
 import {useDispatch} from 'react-redux';
+import COLORS from '../../utiles/colors';
 export default function HomeScreen() {
   const navigation = useNavigation<any>();
   const dispatch = useDispatch<any>();
@@ -50,7 +51,7 @@ const styles = StyleSheet.create({
   },
 
   headingtxt: {
-    color: 'white',
+    color: COLORS.WHITE,
     fontSize: 24,
     fontWeight: 'bold',
     left: 10,

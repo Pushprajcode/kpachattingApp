@@ -11,44 +11,48 @@ import firestore from '@react-native-firebase/firestore';
 import React, {useRef, useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import AlluserList from '../screens/chats/alluserList';
 
 const stack = createNativeStackNavigator();
 
 const NavigationScreen = () => {
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
-  const {uid} = useSelector((store: any) => store.LoginReducer);
+  const {loginUserId} = useSelector((store: any) => store.SignUpReducer);
+  console.log('loginUserId', loginUserId);
 
-  useEffect(() => {
-    console.log('first------->', uid);
-    {
-      if (uid)
-        firestore().collection('Users').doc(uid).update({
-          isActive: true,
-        });
-    }
-    const subscription = AppState.addEventListener('change', nextAppState => {
-      if (
-        appState.current.match(/inactive|background/) &&
-        nextAppState === 'active'
-      ) {
-        firestore().collection('Users').doc(uid).update({
-          isActive: 'Online',
-        });
-      } else {
-        firestore().collection('Users').doc(uid).update({
-          isActive: 'Offline',
-        });
-      }
+  const uid = loginUserId;
 
-      appState.current = nextAppState;
-      setAppStateVisible(appState.current);
-    });
+  // useEffect(() => {
+  //   console.log('first------->', uid);
+  //   {
+  //     if (uid)
+  //       firestore().collection('Users').doc(uid).update({
+  //         isActive: true,
+  //       });
+  //   }
+  //   const subscription = AppState.addEventListener('change', nextAppState => {
+  //     if (
+  //       appState.current.match(/inactive|background/) &&
+  //       nextAppState === 'active'
+  //     ) {
+  //       firestore().collection('Users').doc(uid).update({
+  //         isActive: 'Online',
+  //       });
+  //     } else {
+  //       firestore().collection('Users').doc(uid).update({
+  //         isActive: 'Offline',
+  //       });
+  //     }
 
-    return () => {
-      subscription.remove();
-    };
-  }, []);
+  //     appState.current = nextAppState;
+  //     setAppStateVisible(appState.current);
+  //   });
+
+  //   return () => {
+  //     subscription.remove();
+  //   };
+  // }, []);
   return (
     <NavigationContainer>
       <stack.Navigator
@@ -68,6 +72,10 @@ const NavigationScreen = () => {
         <stack.Screen name={ROUTE_NAMES.PROFILE} component={Profile} />
         <stack.Screen name={ROUTE_NAMES.HOME} component={HomeScreen} />
         <stack.Screen name={ROUTE_NAMES.CHAT_SCREEN} component={Chatscreen} />
+        <stack.Screen
+          name={ROUTE_NAMES.ALLUSER_SCREEN}
+          component={AlluserList}
+        />
       </stack.Navigator>
     </NavigationContainer>
   );

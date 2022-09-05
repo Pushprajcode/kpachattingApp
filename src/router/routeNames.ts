@@ -10,5 +10,6 @@ const ROUTE_NAMES = {
   COMPLETEPROFIL_POP_UP: 'ProfilePop',
   CHAT_SCREEN: 'ChatScreen',
   MENU_SCREEN: 'MenuScreen',
+  ALLUSER_SCREEN: 'AlluserList',
 };
 export default ROUTE_NAMES;

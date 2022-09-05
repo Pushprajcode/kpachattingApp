@@ -38,9 +38,10 @@ export default function LoginScreen() {
     auth()
       .signInWithEmailAndPassword(phoneNoorEmail, password)
       .then(resp => {
-        let uid = resp.user._user.uid;
+        let uid = resp.user?._user?.uid;
+        console.log('uid------->', uid);
         navigation.navigate(ROUTE_NAMES.HOME, {uid});
-        dispatch({type: 'uidloginUser', payload: uid});
+        dispatch({type: 'SET_USER_UID', payload: {uidLogInuser: uid}});
         dispatch({type: 'uid', payload: uid});
         console.log('response', resp);
       })

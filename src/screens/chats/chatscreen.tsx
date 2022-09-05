@@ -25,57 +25,68 @@ import Chats from '.';
 import {useNavigation} from '@react-navigation/native';
 
 const Chat = ({route}: any) => {
+  console.log(route.params);
   const navigation = useNavigation();
-  const {uid} = useSelector((store: any) => store.LoginReducer);
-  const {Name, Uid, profileImage, status} = route.params;
+  const {loginUserId} = useSelector((store: any) => store.SignUpReducer);
+  const uid = loginUserId;
+  const {Name, Uid, profileImage} = route?.params;
+
   const [messages, setMessages] = useState([]);
   const [userStatus, setUserStatus] = useState(false);
   const roomID = uid < Uid ? uid + Uid : Uid + uid;
   const [timer, setTimer] = useState(100);
   const [isTyping, setIsTyping] = useState(false);
+  const [loginData, SetloginData] = useState<any>();
   /**
    * @des userStatus
    */
-  useEffect(() => {
-    const updateStatus = firestore()
-      .collection('Users')
-      .doc(Uid)
-      .onSnapshot((doc: any) => {
-        let status = doc?.data()?.isActive;
-        setUserStatus(status);
-      });
-    return () => updateStatus();
-  }, []);
+  // useEffect(() => {
+  //   firestore()
+  //     .collection('Users')
+  //     .doc(uid)
+  //     .onSnapshot(onchange => {
+  //       const userData = onchange.data();
+  //       SetloginData(userData);
+  //     });
+  //   const updateStatus = firestore()
+  //     .collection('Users')
+  //     .doc(Uid)
+  //     .onSnapshot((doc: any) => {
+  //       let status = doc?.data()?.isActive;
+  //       setUserStatus(status);
+  //     });
+  //   return () => updateStatus();
+  // }, []);
 
-  /**
-   * @des update messages
-   */
-  useEffect(() => {
-    const updateMessages = firestore()
-      .collection('Chats')
-      .doc(roomID)
-      .collection('messages')
-      .onSnapshot((doc: any) => {
-        let data = doc?._docs?.map((element: any) => element?._data);
-        data?.sort(
-          (a: {createdAt: number}, b: {createdAt: number}) =>
-            b.createdAt - a.createdAt,
-        );
+  // /**
+  //  * @des update messages
+  //  */
+  // useEffect(() => {
+  //   const updateMessages = firestore()
+  //     .collection('Chats')
+  //     .doc(roomID)
+  //     .collection('messages')
+  //     .onSnapshot((doc: any) => {
+  //       let data = doc?._docs?.map((element: any) => element?._data);
+  //       data?.sort(
+  //         (a: {createdAt: number}, b: {createdAt: number}) =>
+  //           b.createdAt - a.createdAt,
+  //       );
 
-        let newmsgs = data.filter((item: any) => {
-          if (item?.deletedForEveryOne) {
-            return false;
-          } else if (item?.deletedBy) {
-            return item?.deletedBy != uid;
-          } else {
-            return true;
-          }
-        });
+  //       let newmsgs = data.filter((item: any) => {
+  //         if (item?.deletedForEveryOne) {
+  //           return false;
+  //         } else if (item?.deletedBy) {
+  //           return item?.deletedBy != uid;
+  //         } else {
+  //           return true;
+  //         }
+  //       });
 
-        setMessages(newmsgs);
-      });
-    return () => updateMessages();
-  }, []);
+  //       setMessages(newmsgs);
+  //     });
+  //   return () => updateMessages();
+  // }, []);
 
   /**
    *
@@ -91,6 +102,27 @@ const Chat = ({route}: any) => {
       received: false,
       createdAt: new Date().getTime(),
     };
+    console.log(message.length);
+    if (message.length < 2) {
+      firestore()
+        .collection('Users')
+        .doc(uid)
+        .collection('Inbox')
+        .doc(Uid)
+        .set({
+          Name: Name,
+          id: Uid,
+          lastMessage: mymessage,
+          profileImage: profileImage,
+        });
+
+      firestore()
+        .collection('Users')
+        .doc(Uid)
+        .collection('Inbox')
+        .doc(uid)
+        .set({loginData, lastmessage: mymessage});
+    }
 
     setMessages(previousMsg => GiftedChat.append(previousMsg, mymessage));
     firestore()
@@ -101,37 +133,37 @@ const Chat = ({route}: any) => {
       .set({...mymessage});
   };
 
-  useEffect(() => {
-    hanleReadStatus();
-  }, []);
+  // useEffect(() => {
+  //   hanleReadStatus();
+  // }, []);
 
-  const hanleReadStatus = async () => {
-    const validate = await firestore()
-      .collection('Chats')
-      .doc(roomID)
-      .collection('messages')
-      .get();
-    const batch = firestore()?.batch();
-    validate.forEach((documentSnapshot: any) => {
-      if (documentSnapshot._data.sendTo === uid) {
-        batch.update(documentSnapshot.ref, {received: true});
-      }
-    });
-    return batch.commit();
-  };
+  // const hanleReadStatus = async () => {
+  //   const validate = await firestore()
+  //     .collection('Chats')
+  //     .doc(roomID)
+  //     .collection('messages')
+  //     .get();
+  //   const batch = firestore()?.batch();
+  //   validate.forEach((documentSnapshot: any) => {
+  //     if (documentSnapshot._data.sendTo === uid) {
+  //       batch.update(documentSnapshot.ref, {received: true});
+  //     }
+  //   });
+  //   return batch.commit();
+  // };
 
-  useEffect(() => {
-    const typingListener = firestore()
-      .collection('chats')
-      .doc(roomID)
-      .collection(Uid)
-      .doc('CurrentTypingState')
-      .onSnapshot(snapshot => {
-        setIsTyping(snapshot?.data()?.isTyping);
-      });
+  // useEffect(() => {
+  //   const typingListener = firestore()
+  //     .collection('chats')
+  //     .doc(roomID)
+  //     .collection(Uid)
+  //     .doc('CurrentTypingState')
+  //     .onSnapshot(snapshot => {
+  //       setIsTyping(snapshot?.data()?.isTyping);
+  //     });
 
-    return () => typingListener();
-  }, []);
+  //   return () => typingListener();
+  // }, []);
 
   const _onInputTextChanged = (text: any) => {
     if (text.length > 0) {

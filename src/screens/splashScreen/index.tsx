@@ -5,17 +5,14 @@ import {vh, vw} from '../../utiles/dimensions';
 import {IMAGES} from '../../utiles/images';
 import COLORS from '../../utiles/colors';
 import ROUTE_NAMES from '../../router/routeNames';
-import {useDispatch, useSelector} from 'react-redux';
+import {useSelector} from 'react-redux';
 
 function SplashScreen() {
   const navigation = useNavigation<any>();
-  // const dispatch = useDispatch<any>();
 
   const {loginUserId} = useSelector((store: any) => store.SignUpReducer);
-  console.log('---------SPLASHSCREEN--------->', loginUserId);
 
   useEffect(() => {
-    console.log('splaxhbdsfhjdfhk', loginUserId);
     setTimeout(() => {
       if (loginUserId != '') {
         navigation.navigate(ROUTE_NAMES.HOME);

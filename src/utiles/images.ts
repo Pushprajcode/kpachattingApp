@@ -20,4 +20,5 @@ export const IMAGES = {
   PHONE_IMAGE: require('../assets/images/phone.png'),
   LINES_IMAGE: require('../assets/images/lines.png'),
   ARROW_IMAGE: require('../assets/images/arrow.png'),
+  ALLUSER_IMAGE: require('../assets/images/comment.png'),
 };

@@ -7,8 +7,8 @@ const LoginReducer = (state = intailState, action: any) => {
   console.log('payload', payload);
 
   switch (type) {
-    case 'uidloginUser  ':
-      return {...state, uidLogInuser: payload};
+    case 'SET_USER_UID':
+      return {...state, ...payload};
     default:
       return state;
   }
