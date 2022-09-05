@@ -21,18 +21,21 @@ import {useDispatch, useSelector} from 'react-redux';
 import Custombackbutton from '../../customComponents/custombackbutton';
 import firestore from '@react-native-firebase/firestore';
 
-
 export default function Profile({route}: any) {
+  const {name, phoneNoorEmail} = route.params;
   const dispatch = useDispatch<any>();
   const [email, setEmail] = useState('');
-  const [name, setName] = useState('');
+  // const [name, setName] = useState('');
+  const [phone, setphone] = useState('');
   const [time, settime] = useState(new Date().getTime());
   const reference = storage().ref(`img_${time}.jpg`);
   const navigation = useNavigation<any>();
-  const [image, setimage] = useState('');
+  const [image, setimage] = useState<any>('');
   const {uid} = useSelector((store: any) => store.LoginReducer);
   const onpress = () => {
-    navigation.navigate(ROUTE_NAMES.LON_IN_SCREEN);
+    if (name != '' && phoneNoorEmail != '' && phone != '') {
+      navigation.navigate(ROUTE_NAMES.HOME, {});
+    }
   };
   <Custombackbutton style={styles.backButtonStyle} />;
   const imageUploadstore = (imagePath: any) => {
@@ -40,10 +43,10 @@ export default function Profile({route}: any) {
       .putFile(imagePath)
       .then(res => {
         console.log('uploaded', res);
-        reference.getDownloadURL().then(res => { firestore().collection('Users').doc(uid).update({
-          profileImage:res
-        })
-          
+        reference.getDownloadURL().then(res => {
+          firestore().collection('Users').doc(uid).update({
+            profileImage: res,
+          });
         });
       })
       .catch(err => {
@@ -55,7 +58,6 @@ export default function Profile({route}: any) {
     ImageCropPicker.openPicker({
       width: 300,
       height: 300,
-
     })
       .then(img => {
         imageUploadstore(img.path);
@@ -92,11 +94,15 @@ export default function Profile({route}: any) {
         <CustomTextInput
           placeholder={STRINGS.EMAIL_NUMBER}
           style={styles.emailphonecommonStyle}
-          value={email}
+          value={phoneNoorEmail}
         />
         <CustomTextInput
           placeholder={STRINGS.PHONE}
           style={styles.emailphonecommonStyle}
+          value={phone}
+          onChangeText={(text: any) => {
+            setphone(text);
+          }}
         />
         <CustomTextInput
           placeholder={STRINGS.Bio}
@@ -141,16 +147,15 @@ const styles = StyleSheet.create({
     borderRadius: normalize(75),
     resizeMode: 'cover',
   },
-  img: {height: 20,
-     width: 20,
-     tintColor: COLORS.LIGHT_BLUE},
+  img: {height: 20, width: 20, tintColor: COLORS.LIGHT_BLUE},
   imgpickerpress: {
     backgroundColor: 'white',
     padding: 7,
-   borderRadius: 50,
-   top: 63,
-   right: 45,
-   borderColor:COLORS.LIGHT_BLUE,borderWidth:1
+    borderRadius: 50,
+    top: 63,
+    right: 45,
+    borderColor: COLORS.LIGHT_BLUE,
+    borderWidth: 1,
   },
   editStyle: {
     height: normalize(20),

@@ -1,17 +1,33 @@
 import {useSelector} from 'react-redux';
 import COLORS from '../../utiles/colors';
-import React, {useEffect, useState, useRef} from 'react';
+import React, {useEffect, useState, useRef, useCallback} from 'react';
 import firestore from '@react-native-firebase/firestore';
-import {Alert, StyleSheet, View, Text, Image} from 'react-native';
-import Custombackbutton from '../../customComponents/custombackbutton';
-import {GiftedChat, Bubble, InputToolbar, Send} from 'react-native-gifted-chat';
-import {normalize} from '../../utiles/dimensions';
+import {
+  Alert,
+  StyleSheet,
+  View,
+  Text,
+  Image,
+  Clipboard,
+  TouchableOpacity,
+} from 'react-native';
+import {
+  GiftedChat,
+  Bubble,
+  InputToolbar,
+  Send,
+  Time,
+} from 'react-native-gifted-chat';
+import {normalize, vh, vw} from '../../utiles/dimensions';
 import {getStatusBarHeight} from 'react-native-status-bar-height';
 import {IMAGES} from '../../utiles/images';
+import Chats from '.';
+import {useNavigation} from '@react-navigation/native';
 
 const Chat = ({route}: any) => {
+  const navigation = useNavigation();
   const {uid} = useSelector((store: any) => store.LoginReducer);
-  const {Name, Uid, profileImage} = route.params;
+  const {Name, Uid, profileImage, status} = route.params;
   const [messages, setMessages] = useState([]);
   const [userStatus, setUserStatus] = useState(false);
   const roomID = uid < Uid ? uid + Uid : Uid + uid;
@@ -45,7 +61,18 @@ const Chat = ({route}: any) => {
           (a: {createdAt: number}, b: {createdAt: number}) =>
             b.createdAt - a.createdAt,
         );
-        setMessages(data);
+
+        let newmsgs = data.filter((item: any) => {
+          if (item?.deletedForEveryOne) {
+            return false;
+          } else if (item?.deletedBy) {
+            return item?.deletedBy != uid;
+          } else {
+            return true;
+          }
+        });
+
+        setMessages(newmsgs);
       });
     return () => updateMessages();
   }, []);
@@ -60,6 +87,8 @@ const Chat = ({route}: any) => {
       ...mesg,
       sendTo: Uid,
       sendBy: uid,
+      sent: true,
+      received: false,
       createdAt: new Date().getTime(),
     };
 
@@ -68,27 +97,27 @@ const Chat = ({route}: any) => {
       .collection('Chats')
       .doc(roomID)
       .collection('messages')
-      .add(mymessage)
-      .then()
-      .catch((err: any) => console.log(err));
+      .doc(mymessage._id)
+      .set({...mymessage});
   };
-  const CustomHeader = () => {
-    console.log('fjefreriurituhtriuu89er', getStatusBarHeight());
-    return (
-      <View style={styles.backButtonView}>
-        <Custombackbutton />
 
-        <Image style={styles.profilepic} source={{uri: profileImage}} />
-        <View style={styles.onlineView}>
-          <Text style={styles.textName}>{Name}</Text>
-          {userStatus ? (
-            <Text style={styles.onlineText}>{'Online'}</Text>
-          ) : (
-            <Text style={styles.offlineText}>{'Ofline'}</Text>
-          )}
-        </View>
-      </View>
-    );
+  useEffect(() => {
+    hanleReadStatus();
+  }, []);
+
+  const hanleReadStatus = async () => {
+    const validate = await firestore()
+      .collection('Chats')
+      .doc(roomID)
+      .collection('messages')
+      .get();
+    const batch = firestore()?.batch();
+    validate.forEach((documentSnapshot: any) => {
+      if (documentSnapshot._data.sendTo === uid) {
+        batch.update(documentSnapshot.ref, {received: true});
+      }
+    });
+    return batch.commit();
   };
 
   useEffect(() => {
@@ -127,20 +156,122 @@ const Chat = ({route}: any) => {
       .set({
         isTyping: bool,
       })
-      .then(() => {
-        console.log('Send success');
-      })
+      .then(() => {})
       .catch(err => {
         console.log('SendError', err);
       });
   };
 
+  const handleLongPress = useCallback(
+    (context, message) => {
+      let options, cancelButtonIndex;
+      if (uid === message.sendBy) {
+        options = ['copy', 'Delete Me', 'Delete for EveryOne', 'Cancel'];
+        cancelButtonIndex = options.length;
+        context
+          .actionSheet()
+          .showActionSheetWithOptions(
+            {options, cancelButtonIndex},
+            (buttonIndex: any) => {
+              switch (buttonIndex) {
+                case 0:
+                  Clipboard.setString(message.text);
+                  break;
+                case 1:
+                  deletForMe(message, roomID, uid, Uid);
+                  break;
+                case 2:
+                  deletedForEveryOne(message, roomID, Uid, uid);
+                  break;
+              }
+            },
+          );
+      } else {
+        options = ['copy', 'Delete Me', 'Cancel'];
+        cancelButtonIndex = options.length;
+        context
+          .actionSheet()
+          .showActionSheetWithOptions(
+            {options, cancelButtonIndex},
+            (buttonIndex: any) => {
+              switch (buttonIndex) {
+                case 0:
+                  Clipboard.setString(message.text);
+                  break;
+                case 1:
+                  deletForMe(message, roomID, uid, Uid);
+                  break;
+              }
+            },
+          );
+      }
+    },
+    [messages],
+  );
+
+  const deletForMe = (
+    message: string,
+    roomID: string,
+    uid: string,
+    Uid: string,
+  ) => {
+    firestore()
+      .collection('Chats')
+      .doc(roomID)
+      .collection('messages')
+      .doc(message?._id)
+      .update({...message, deletedBy: uid});
+  };
+  const deletedForEveryOne = (
+    message: string,
+    roomID: string,
+    uid: string,
+    Uid: string,
+  ) => {
+    firestore()
+      .collection('Chats')
+      .doc(roomID)
+      .collection('messages')
+      .doc(message?._id)
+      .update({...message, deletedForEveryOne: true});
+  };
+
   return (
     <View style={styles.mainContainerStyle}>
-      <CustomHeader />
+      <View style={styles.headerContainerView}>
+        <TouchableOpacity
+          style={styles.backButtonView}
+          onPress={() => {
+            navigation.goBack();
+          }}>
+          <Image source={IMAGES.ARROW_IMAGE} style={styles.backButtonStyle} />
+        </TouchableOpacity>
+        <View style={styles.userImageStyle}>
+          <Image style={styles.backButtonStyle} source={{uri: profileImage}} />
+        </View>
+        <View style={styles.userInfoView}>
+          <Text style={styles.nameTextStyle}>{Name}</Text>
+          {userStatus ? (
+            <Text style={styles.onlineText}>{'Online'}</Text>
+          ) : (
+            <Text style={styles.offlineText}>{'Ofline'}</Text>
+          )}
+        </View>
+        <View style={styles.videoStyleView}>
+          <TouchableOpacity>
+            <Image style={styles.videoStyle} source={IMAGES.VEDIO_IMAGE} />
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <Image style={styles.phoneStyle} source={IMAGES.PHONE_IMAGE} />
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <Image style={styles.lineStyle} source={IMAGES.LINES_IMAGE} />
+          </TouchableOpacity>
+        </View>
+      </View>
       <View style={{flex: 1}}>
         <GiftedChat
-        
+          onLongPress={handleLongPress}
           onInputTextChanged={_onInputTextChanged}
           scrollToBottomStyle={{
             borderStartColor: COLORS.RED,
@@ -161,17 +292,22 @@ const Chat = ({route}: any) => {
             return (
               <Bubble
                 {...props}
+                tickStyle={{color: COLORS.RED}}
                 textStyle={{
                   right: {
+                    color: COLORS.WHITE,
+                  },
+                  left: {
                     color: COLORS.WHITE,
                   },
                 }}
                 wrapperStyle={{
                   left: {
-                    backgroundColor: 'red',
+                    backgroundColor: '#2eccdb',
+                    right: normalize(45),
                   },
                   right: {
-                    backgroundColor: '#2b3595',
+                    backgroundColor: '#28a9c8',
                   },
                 }}
               />
@@ -190,6 +326,23 @@ const Chat = ({route}: any) => {
               </Send>
             );
           }}
+          renderTime={props => {
+            return (
+              <Time
+                {...props}
+                timeTextStyle={{
+                  left: {
+                    color: 'white',
+                    fontSize: normalize(13),
+                  },
+                  right: {
+                    color: 'white',
+                    fontSize: normalize(13),
+                  },
+                }}
+              />
+            );
+          }}
         />
       </View>
     </View>
@@ -204,9 +357,8 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.WHITE,
   },
   backButtonView: {
-    flexDirection: 'row',
-    marginTop: getStatusBarHeight(),
-    backgroundColor: 'aqua',
+    height: normalize(40),
+    width: normalize(30),
   },
   profilepic: {
     height: 50,
@@ -223,18 +375,82 @@ const styles = StyleSheet.create({
     borderBottomWidth: normalize(1),
   },
   onlineText: {
-    color: COLORS.RED,
-    padding: 25,
+    color: COLORS.WHITE,
+    fontSize: 15,
+    fontWeight: '700',
   },
   onlineView: {
     flexDirection: 'row',
+    width: '50%',
+    backgroundColor: 'red',
   },
   offlineText: {
     color: COLORS.BLACK,
-    padding: 25,
+    fontSize: 15,
+    fontWeight: '700',
   },
   textName: {
     color: COLORS.BLUE_MAGNETA,
     padding: 25,
+  },
+  headerContainerView: {
+    height: normalize(80),
+    backgroundColor: '#28a9c8',
+    marginTop: getStatusBarHeight(),
+    alignItems: 'center',
+    flexDirection: 'row',
+    paddingHorizontal: normalize(10),
+  },
+  backButtonStyle: {
+    height: '100%',
+    width: '100%',
+    resizeMode: 'contain',
+    right: normalize(3),
+  },
+  userImageStyle: {
+    height: normalize(50),
+    width: normalize(50),
+    borderRadius: normalize(30),
+    backgroundColor: COLORS.GREY,
+    marginLeft: normalize(5),
+    overflow: 'hidden',
+  },
+  userInfoView: {
+    height: normalize(50),
+    width: '50%',
+    padding: normalize(5),
+  },
+
+  nameTextStyle: {
+    fontSize: normalize(18),
+    color: COLORS.BLACK,
+    fontWeight: 'bold',
+  },
+  videoStyle: {
+    height: vh(28),
+    width: vw(28),
+    marginTop: normalize(3),
+    resizeMode: 'contain',
+  },
+  lineStyle: {
+    height: vh(20),
+    width: vw(20),
+    transform: [{rotate: '90deg'}],
+    marginTop: normalize(6),
+    resizeMode: 'contain',
+    marginLeft: normalize(5),
+  },
+  videoStyleView: {
+    flexDirection: 'row',
+    right: normalize(10),
+    marginBottom: normalize(10),
+    marginLeft: normalize(10),
+  },
+  phoneStyle: {
+    height: vh(30),
+    width: vw(30),
+    marginTop: normalize(3),
+    marginLeft: 10,
+    resizeMode: 'contain',
   },
 });

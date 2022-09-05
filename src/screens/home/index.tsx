@@ -1,5 +1,6 @@
 import {
   Image,
+  ImageBackground,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -11,15 +12,20 @@ import {IMAGES} from '../../utiles/images';
 import {firebase} from '@react-native-firebase/storage';
 import {useNavigation} from '@react-navigation/native';
 import ROUTE_NAMES from '../../router/routeNames';
+import {useDispatch} from 'react-redux';
 export default function HomeScreen() {
   const navigation = useNavigation<any>();
+  const dispatch = useDispatch<any>();
   const onpressSignOut = () => {
     firebase
       .auth()
       .signOut()
       .then(() => {
         console.log('Signed Out');
-        navigation.navigate(ROUTE_NAMES.LON_IN_SCREEN);
+        dispatch({type: 'userDetails', payload: {}});
+        dispatch({type: 'uid', payload: ''});
+
+        navigation.navigate(ROUTE_NAMES.LOG_IN_SCREEN);
       })
       .catch(e => {
         console.error('Sign Out Error', e);
@@ -38,7 +44,7 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   headerView: {
-    backgroundColor: '#247881',
+    backgroundColor: '#1984b0',
     flex: 1,
     paddingTop: 40,
   },

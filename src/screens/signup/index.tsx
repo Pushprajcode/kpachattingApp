@@ -1,10 +1,4 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  ScrollView,
-} from 'react-native';
+import {StyleSheet, Text, View, Image, ScrollView} from 'react-native';
 import React, {useState} from 'react';
 import CustomTextInput from '../../customComponents/customTextInput';
 import STRINGS from '../../utiles/strings';
@@ -44,21 +38,21 @@ export default function SignUp() {
       .createUserWithEmailAndPassword(phoneNoorEmail, password)
       .then(res => {
         let uid = res.user._user.uid;
-        console.log('AgterSignUp UID__________________', uid);
+        dispatch({type: 'uid', payload: uid});
+        navigation.navigate(ROUTE_NAMES.PROFILE, {
+          name: name,
+          phoneNoorEmail: phoneNoorEmail,
+        });
         firestore()
           .collection('Users')
           .doc(uid)
-          .set({name: name, email: phoneNoorEmail, uid: uid, isActive: false})
-          .then(res => {
-            console.log(res);
-          })
+          .set({name: name, email: phoneNoorEmail, uid: uid})
+          .then(res => {})
           .catch(err => console.log(err));
-        dispatch({type: 'uid', payload: uid});
       })
       .catch(err => {
         console.log('Error UserCreate', phoneNoorEmail, password, err);
       });
-    navigation.navigate(ROUTE_NAMES.PROFILE);
   };
 
   const onChangeTextPhoneorEmail = (value: any) => {

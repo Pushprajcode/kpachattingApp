@@ -20,20 +20,24 @@ const NavigationScreen = () => {
   const {uid} = useSelector((store: any) => store.LoginReducer);
 
   useEffect(() => {
-    firestore().collection('Users').doc(uid).update({
-      isActive: true,
-    });
+    console.log('first------->', uid);
+    {
+      if (uid)
+        firestore().collection('Users').doc(uid).update({
+          isActive: true,
+        });
+    }
     const subscription = AppState.addEventListener('change', nextAppState => {
       if (
         appState.current.match(/inactive|background/) &&
         nextAppState === 'active'
       ) {
         firestore().collection('Users').doc(uid).update({
-          isActive: true,
+          isActive: 'Online',
         });
       } else {
         firestore().collection('Users').doc(uid).update({
-          isActive: false,
+          isActive: 'Offline',
         });
       }
 
@@ -57,7 +61,7 @@ const NavigationScreen = () => {
         />
 
         <stack.Screen
-          name={ROUTE_NAMES.LON_IN_SCREEN}
+          name={ROUTE_NAMES.LOG_IN_SCREEN}
           component={LoginScreen}
         />
         <stack.Screen name={ROUTE_NAMES.SIGN_Up} component={SignUp} />

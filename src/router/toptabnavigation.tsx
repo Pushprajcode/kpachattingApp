@@ -13,7 +13,7 @@ export default function TopTabCategoryFn() {
         tabBarActiveTintColor: '#3B0000',
         tabBarIndicatorStyle: {backgroundColor: 'transparent'},
         tabBarContentContainerStyle: {
-          backgroundColor: '#43919B',
+          backgroundColor: '#23aac8',
           borderColor: '#247881',
           borderStartWidth: 2,
           borderEndWidth: 2,

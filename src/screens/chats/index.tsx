@@ -12,6 +12,9 @@ import {useSelector} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
 import ROUTE_NAMES from '../../router/routeNames';
 import COLORS from '../../utiles/colors';
+import {IMAGES} from '../../utiles/images';
+import {normalize} from '../../utiles/dimensions';
+import {Colors} from 'react-native/Libraries/NewAppScreen';
 
 export default function Chats({route}: any) {
   const navigation = useNavigation<any>();
@@ -26,27 +29,35 @@ export default function Chats({route}: any) {
     getUsersDetails();
   }, []);
 
-
   const onrender = ({item}: any) => {
     console.log('itmem', item);
-    const img=item.profileImage
-    console.log(img)
-    return item.uid!= uid ? (
+
+    return item.uid != uid ? (
       <TouchableOpacity
+        style={styles.detailsView}
         onPress={() =>
           navigation.navigate(ROUTE_NAMES.CHAT_SCREEN, {
             Name: item?.name,
             Uid: item?.uid,
             status: item?.isActive,
-            profileImage:item?.profileImage,
+            profileImage: item?.profileImage,
           })
-        }
-        style={styles.itemStyle}>
-        <Image style={styles.profileImg}
-        source={{uri:img}}/>
-        <Text style={styles.textName}>{item.name}</Text>
+        }>
+        <View style={styles.profileImageView}>
+          <Image
+            style={{height: '100%', width: '100%'}}
+            source={{uri: item.profileImage}}
+          />
+        </View>
+        <View style={styles.userInfoView}>
+          <Text style={styles.nameTextStyle}>{item.name}</Text>
+        </View>
       </TouchableOpacity>
     ) : null;
+  };
+
+  const itemSeparator = () => {
+    return <View style={styles.separatorView} />;
   };
   return (
     <View style={styles.main}>
@@ -54,6 +65,7 @@ export default function Chats({route}: any) {
         data={user}
         renderItem={onrender}
         keyExtractor={({item}) => item}
+        ItemSeparatorComponent={itemSeparator}
       />
     </View>
   );
@@ -62,17 +74,15 @@ export default function Chats({route}: any) {
 const styles = StyleSheet.create({
   itemStyle: {
     padding: 10,
-    backgroundColor: '#F0D9E7',
-    borderBottomWidth: 1,
-    borderBottomColor:COLORS.BLACK,
+    borderBottomColor: COLORS.BLACK,
     borderRadius: 20,
-    borderRightWidth: 1,
-    flexDirection:'row',
-    marginVertical:6
+    flexDirection: 'row',
+    marginVertical: 6,
+    marginBottom: normalize(900),
   },
   main: {
     flex: 1,
-    backgroundColor: '#EEEEEE',
+    backgroundColor: '#ffffff',
   },
   textName: {
     fontSize: 14,
@@ -82,5 +92,36 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     color: '#40394A',
   },
-  profileImg:{height:50,width:50,borderRadius:100,backgroundColor:'aqua'}
+  profileImg: {
+    height: 50,
+    width: 50,
+    borderRadius: 100,
+    backgroundColor: 'aqua',
+  },
+  detailsView: {
+    padding: normalize(10),
+    backgroundColor: COLORS.WHITE,
+    flexDirection: 'row',
+  },
+  profileImageView: {
+    height: normalize(60),
+    width: normalize(60),
+    backgroundColor: 'green',
+    borderRadius: normalize(30),
+    overflow: 'hidden',
+  },
+  userInfoView: {
+    padding: normalize(10),
+  },
+  nameTextStyle: {
+    fontSize: normalize(18),
+    color: COLORS.BLACK,
+    fontWeight: 'bold',
+  },
+  separatorView: {
+    height: normalize(1),
+    backgroundColor: COLORS.DARK_GREY,
+    opacity: normalize(0.5),
+    marginHorizontal: normalize(6),
+  },
 });

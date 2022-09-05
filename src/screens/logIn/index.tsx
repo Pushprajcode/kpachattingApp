@@ -40,6 +40,7 @@ export default function LoginScreen() {
       .then(resp => {
         let uid = resp.user._user.uid;
         navigation.navigate(ROUTE_NAMES.HOME, {uid});
+        dispatch({type: 'uidloginUser', payload: uid});
         dispatch({type: 'uid', payload: uid});
         console.log('response', resp);
       })
