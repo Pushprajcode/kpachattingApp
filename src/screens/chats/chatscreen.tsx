@@ -25,10 +25,10 @@ import Chats from '.';
 import {useNavigation} from '@react-navigation/native';
 
 const Chat = ({route}: any) => {
-  console.log(route.params);
   const navigation = useNavigation();
-  const {loginUserId} = useSelector((store: any) => store.SignUpReducer);
-  const uid = loginUserId;
+  const {uidLogInuser} = useSelector((store: any) => store.LoginReducer);
+
+  const uid = uidLogInuser;
   const {Name, Uid, profileImage} = route?.params;
 
   const [messages, setMessages] = useState([]);
@@ -37,56 +37,59 @@ const Chat = ({route}: any) => {
   const [timer, setTimer] = useState(100);
   const [isTyping, setIsTyping] = useState(false);
   const [loginData, SetloginData] = useState<any>();
+
   /**
    * @des userStatus
    */
-  // useEffect(() => {
-  //   firestore()
-  //     .collection('Users')
-  //     .doc(uid)
-  //     .onSnapshot(onchange => {
-  //       const userData = onchange.data();
-  //       SetloginData(userData);
-  //     });
-  //   const updateStatus = firestore()
-  //     .collection('Users')
-  //     .doc(Uid)
-  //     .onSnapshot((doc: any) => {
-  //       let status = doc?.data()?.isActive;
-  //       setUserStatus(status);
-  //     });
-  //   return () => updateStatus();
-  // }, []);
+  useEffect(() => {
+    firestore()
+      .collection('Users')
+      .doc(uid)
+      .onSnapshot(onchange => {
+        const userData = onchange.data();
+        console.log('userData', userData);
+        SetloginData(userData);
+      });
+    const updateStatus = firestore()
+      .collection('Users')
+      .doc(Uid)
+      .onSnapshot((doc: any) => {
+        let status = doc?.data()?.isActive;
 
-  // /**
-  //  * @des update messages
-  //  */
-  // useEffect(() => {
-  //   const updateMessages = firestore()
-  //     .collection('Chats')
-  //     .doc(roomID)
-  //     .collection('messages')
-  //     .onSnapshot((doc: any) => {
-  //       let data = doc?._docs?.map((element: any) => element?._data);
-  //       data?.sort(
-  //         (a: {createdAt: number}, b: {createdAt: number}) =>
-  //           b.createdAt - a.createdAt,
-  //       );
+        setUserStatus(status);
+      });
+    return () => updateStatus();
+  }, []);
 
-  //       let newmsgs = data.filter((item: any) => {
-  //         if (item?.deletedForEveryOne) {
-  //           return false;
-  //         } else if (item?.deletedBy) {
-  //           return item?.deletedBy != uid;
-  //         } else {
-  //           return true;
-  //         }
-  //       });
+  /**
+   * @des update messages
+   */
+  useEffect(() => {
+    const updateMessages = firestore()
+      .collection('Chats')
+      .doc(roomID)
+      .collection('messages')
+      .onSnapshot((doc: any) => {
+        let data = doc?._docs?.map((element: any) => element?._data);
+        data?.sort(
+          (a: {createdAt: number}, b: {createdAt: number}) =>
+            b.createdAt - a.createdAt,
+        );
 
-  //       setMessages(newmsgs);
-  //     });
-  //   return () => updateMessages();
-  // }, []);
+        let newmsgs = data.filter((item: any) => {
+          if (item?.deletedForEveryOne) {
+            return false;
+          } else if (item?.deletedBy) {
+            return item?.deletedBy != uid;
+          } else {
+            return true;
+          }
+        });
+
+        setMessages(newmsgs);
+      });
+    return () => updateMessages();
+  }, []);
 
   /**
    *
@@ -113,7 +116,7 @@ const Chat = ({route}: any) => {
           Name: Name,
           id: Uid,
           lastMessage: mymessage,
-          profileImage: profileImage,
+          // profileImage: profileImage,
         });
 
       firestore()
@@ -121,7 +124,11 @@ const Chat = ({route}: any) => {
         .doc(Uid)
         .collection('Inbox')
         .doc(uid)
-        .set({loginData, lastmessage: mymessage});
+        .set({
+          Name: loginData.name,
+          id: uid,
+          lastmessage: mymessage,
+        });
     }
 
     setMessages(previousMsg => GiftedChat.append(previousMsg, mymessage));
@@ -133,37 +140,37 @@ const Chat = ({route}: any) => {
       .set({...mymessage});
   };
 
-  // useEffect(() => {
-  //   hanleReadStatus();
-  // }, []);
+  useEffect(() => {
+    hanleReadStatus();
+  }, []);
 
-  // const hanleReadStatus = async () => {
-  //   const validate = await firestore()
-  //     .collection('Chats')
-  //     .doc(roomID)
-  //     .collection('messages')
-  //     .get();
-  //   const batch = firestore()?.batch();
-  //   validate.forEach((documentSnapshot: any) => {
-  //     if (documentSnapshot._data.sendTo === uid) {
-  //       batch.update(documentSnapshot.ref, {received: true});
-  //     }
-  //   });
-  //   return batch.commit();
-  // };
+  const hanleReadStatus = async () => {
+    const validate = await firestore()
+      .collection('Chats')
+      .doc(roomID)
+      .collection('messages')
+      .get();
+    const batch = firestore()?.batch();
+    validate.forEach((documentSnapshot: any) => {
+      if (documentSnapshot._data.sendTo === uid) {
+        batch.update(documentSnapshot.ref, {received: true});
+      }
+    });
+    return batch.commit();
+  };
 
-  // useEffect(() => {
-  //   const typingListener = firestore()
-  //     .collection('chats')
-  //     .doc(roomID)
-  //     .collection(Uid)
-  //     .doc('CurrentTypingState')
-  //     .onSnapshot(snapshot => {
-  //       setIsTyping(snapshot?.data()?.isTyping);
-  //     });
+  useEffect(() => {
+    const typingListener = firestore()
+      .collection('typingStatus')
+      .doc(roomID)
+      .collection(Uid)
+      .doc('CurrentTypingState')
+      .onSnapshot(snapshot => {
+        setIsTyping(snapshot?.data()?.isTyping);
+      });
 
-  //   return () => typingListener();
-  // }, []);
+    return () => typingListener();
+  }, []);
 
   const _onInputTextChanged = (text: any) => {
     if (text.length > 0) {
@@ -180,7 +187,7 @@ const Chat = ({route}: any) => {
 
   const typingStatus = (bool: boolean) => {
     firestore()
-      .collection('chats')
+      .collection('typingStatus')
       .doc(roomID)
       .collection(uid)
 
@@ -283,11 +290,7 @@ const Chat = ({route}: any) => {
         </View>
         <View style={styles.userInfoView}>
           <Text style={styles.nameTextStyle}>{Name}</Text>
-          {userStatus ? (
-            <Text style={styles.onlineText}>{'Online'}</Text>
-          ) : (
-            <Text style={styles.offlineText}>{'Ofline'}</Text>
-          )}
+          <Text>{userStatus}</Text>
         </View>
         <View style={styles.videoStyleView}>
           <TouchableOpacity>

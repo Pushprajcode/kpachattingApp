@@ -10,11 +10,11 @@ import {useSelector} from 'react-redux';
 function SplashScreen() {
   const navigation = useNavigation<any>();
 
-  const {loginUserId} = useSelector((store: any) => store.SignUpReducer);
+  const {uidLogInuser} = useSelector((store: any) => store.LoginReducer);
 
   useEffect(() => {
     setTimeout(() => {
-      if (loginUserId != '') {
+      if (uidLogInuser != '') {
         navigation.navigate(ROUTE_NAMES.HOME);
       } else navigation.replace(ROUTE_NAMES.LOG_IN_SCREEN);
     }, 1000);

@@ -19,19 +19,21 @@ import Custombackbutton from '../../customComponents/custombackbutton';
 export default function AlluserList() {
   const navigation = useNavigation<any>();
   const [alluser, setAllUsers] = useState<any>();
-  const {loginUserId} = useSelector((store: any) => store.SignUpReducer);
+  const {uidLogInuser} = useSelector((store: any) => store.LoginReducer);
+
   useEffect(() => {
     firestore()
       .collection('Users')
-      .where('uid', '!=', loginUserId)
+      .where('uid', '!=', uidLogInuser)
       .onSnapshot(onsnap => {
         const allUser = onsnap.docs.map(item => item.data());
-        // console.log('dfgh', allUser);
+        console.log('dfgh', allUser);
         setAllUsers(allUser);
       });
   }, []);
 
   const _onrender = ({item}: any) => {
+    console.log('3456789op;lkjhgfdsa', item);
     return (
       <TouchableOpacity
         onPress={() => {
@@ -44,7 +46,7 @@ export default function AlluserList() {
         style={styles.allUserView}>
         <View style={styles.profileImageView}>
           <Image
-            style={{height: '100%', width: '100%'}}
+            style={{height: '100%', width: '100%', resizeMode: 'cover'}}
             source={{uri: item.profileImage}}
           />
         </View>
@@ -56,13 +58,27 @@ export default function AlluserList() {
   };
 
   return (
-    <View style={{marginTop: 30}}>
-      <Custombackbutton
-        onPress={() => {
-          navigation.goBack();
-        }}
-        style={styles.backbutton}
-      />
+    <View style={{flex: 1}}>
+      <View style={{flexDirection: 'row', marginTop: normalize(20)}}>
+        <Custombackbutton
+          onPress={() => {
+            navigation.goBack();
+          }}
+          style={styles.backbutton}
+        />
+        <Text
+          style={{
+            fontSize: 20,
+            fontStyle: 'italic',
+            fontWeight: '800',
+            color: 'black',
+            marginTop: normalize(30),
+            marginLeft: normalize(15),
+          }}>
+          {'Select Contacts'}
+        </Text>
+        {/* <Image source={}/> */}
+      </View>
       <FlatList data={alluser} renderItem={_onrender} />
     </View>
   );

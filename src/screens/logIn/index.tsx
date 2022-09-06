@@ -42,7 +42,7 @@ export default function LoginScreen() {
         console.log('uid------->', uid);
         navigation.navigate(ROUTE_NAMES.HOME, {uid});
         dispatch({type: 'SET_USER_UID', payload: {uidLogInuser: uid}});
-        dispatch({type: 'uid', payload: uid});
+
         console.log('response', resp);
       })
       .catch(error => {
@@ -228,6 +228,3 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
 });
-function dispatch(arg0: {ty: any}) {
-  throw new Error('Function not implemented.');
-}

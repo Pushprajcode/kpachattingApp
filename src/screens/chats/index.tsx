@@ -17,8 +17,9 @@ import {normalize} from '../../utiles/dimensions';
 
 export default function Chats({route}: any) {
   const navigation = useNavigation<any>();
-  const {loginUserId} = useSelector((store: any) => store.SignUpReducer);
-  const uid = loginUserId.loginUserId;
+
+  const {uidLogInuser} = useSelector((store: any) => store.LoginReducer);
+  const uid = uidLogInuser;
   console.log('w345tygfvdcsx', uid);
   const [user, setUser] = useState<any>();
   const getUsersDetails = async () => {
@@ -57,7 +58,7 @@ export default function Chats({route}: any) {
         </View>
         <View style={styles.userInfoView}>
           <Text style={styles.nameTextStyle}>{item?.Name}</Text>
-          <Text>{item?.lastMessage?.text}</Text>
+          <Text style={{color: 'red'}}>{item?.lastMessage?.text}</Text>
         </View>
       </TouchableOpacity>
     ) : null;

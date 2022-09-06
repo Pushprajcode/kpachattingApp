@@ -13,9 +13,8 @@ import rootReducer from '.';
 const enhancer = compose(applyMiddleware(thunk, createLogger({})));
 const persistConfig = {
   key: 'root',
-  timout: 0,
   storage: AsyncStorage,
-  whitelist: ['SignUpReducer'],
+  whitelist: ['LoginReducer'],
 };
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 export const store = createStore(persistedReducer, enhancer);

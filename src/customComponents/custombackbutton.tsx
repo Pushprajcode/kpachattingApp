@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
   backimg: {
     height: 30,
     width: 30,
-    marginTop: 20,
+    marginTop: 30,
     marginLeft: 10,
   },
 });

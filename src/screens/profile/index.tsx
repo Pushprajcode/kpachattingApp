@@ -17,20 +17,20 @@ import CustomButton from '../../customComponents/customButton';
 import {useNavigation} from '@react-navigation/native';
 import ROUTE_NAMES from '../../router/routeNames';
 import ImageCropPicker from 'react-native-image-crop-picker';
-import {useDispatch, useSelector} from 'react-redux';
+import {useSelector} from 'react-redux';
 import Custombackbutton from '../../customComponents/custombackbutton';
 import firestore from '@react-native-firebase/firestore';
 
 export default function Profile({route}: any) {
   const {name, phoneNoorEmail} = route.params;
-  const dispatch = useDispatch<any>();
+
   const [email, setEmail] = useState('');
   const [phone, setphone] = useState('');
   const [time, settime] = useState(new Date().getTime());
   const reference = storage().ref(`img_${time}.jpg`);
   const navigation = useNavigation<any>();
   const [image, setimage] = useState<any>('');
-  const {loginUserId} = useSelector((store: any) => store.SignUpReducer);
+  const {uidLogInuser} = useSelector((store: any) => store.LoginReducer);
   const onpress = () => {
     if (name != '' && phoneNoorEmail != '' && phone != '') {
       navigation.navigate(ROUTE_NAMES.HOME, {});
@@ -42,7 +42,7 @@ export default function Profile({route}: any) {
       .putFile(imagePath)
       .then(res => {
         reference.getDownloadURL().then(res => {
-          firestore().collection('Users').doc(loginUserId).update({
+          firestore().collection('Users').doc(uidLogInuser).update({
             profileImage: res,
           });
         });

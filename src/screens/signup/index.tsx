@@ -38,7 +38,7 @@ export default function SignUp() {
       .createUserWithEmailAndPassword(phoneNoorEmail, password)
       .then(res => {
         let uid = res.user._user.uid;
-        dispatch({type: 'uid', payload: {loginUserId: uid}});
+        dispatch({type: 'SET_USER_UID', payload: {uidLogInuser: uid}});
         navigation.navigate(ROUTE_NAMES.PROFILE, {
           name: name,
           phoneNoorEmail: phoneNoorEmail,

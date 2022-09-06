@@ -12,47 +12,49 @@ import React, {useRef, useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import AlluserList from '../screens/chats/alluserList';
+import {store} from '../redux/reducer/store';
 
 const stack = createNativeStackNavigator();
 
 const NavigationScreen = () => {
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
-  const {loginUserId} = useSelector((store: any) => store.SignUpReducer);
-  console.log('loginUserId', loginUserId);
 
-  const uid = loginUserId;
+  const {uidLogInuser} = useSelector((store: any) => store.LoginReducer);
+  console.log('uid', uidLogInuser);
 
-  // useEffect(() => {
-  //   console.log('first------->', uid);
-  //   {
-  //     if (uid)
-  //       firestore().collection('Users').doc(uid).update({
-  //         isActive: true,
-  //       });
-  //   }
-  //   const subscription = AppState.addEventListener('change', nextAppState => {
-  //     if (
-  //       appState.current.match(/inactive|background/) &&
-  //       nextAppState === 'active'
-  //     ) {
-  //       firestore().collection('Users').doc(uid).update({
-  //         isActive: 'Online',
-  //       });
-  //     } else {
-  //       firestore().collection('Users').doc(uid).update({
-  //         isActive: 'Offline',
-  //       });
-  //     }
+  const uid = uidLogInuser;
 
-  //     appState.current = nextAppState;
-  //     setAppStateVisible(appState.current);
-  //   });
+  useEffect(() => {
+    console.log('first------->', uid);
+    {
+      if (uid)
+        firestore().collection('Users').doc(uid).update({
+          isActive: true,
+        });
+    }
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextAppState === 'active'
+      ) {
+        firestore().collection('Users').doc(uid).update({
+          isActive: 'Online',
+        });
+      } else {
+        firestore().collection('Users').doc(uid).update({
+          isActive: 'Offline',
+        });
+      }
 
-  //   return () => {
-  //     subscription.remove();
-  //   };
-  // }, []);
+      appState.current = nextAppState;
+      setAppStateVisible(appState.current);
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
   return (
     <NavigationContainer>
       <stack.Navigator
