@@ -9,12 +9,12 @@ import {
 import React, {useEffect, useState} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import {useSelector} from 'react-redux';
-import {SafeAreaFrameContext} from 'react-native-safe-area-context';
 import {normalize, vh, vw} from '../../utiles/dimensions';
 import COLORS from '../../utiles/colors';
 import {useNavigation} from '@react-navigation/native';
 import ROUTE_NAMES from '../../router/routeNames';
 import Custombackbutton from '../../customComponents/custombackbutton';
+import {IMAGES} from '../../utiles/images';
 
 export default function AlluserList() {
   const navigation = useNavigation<any>();
@@ -27,13 +27,11 @@ export default function AlluserList() {
       .where('uid', '!=', uidLogInuser)
       .onSnapshot(onsnap => {
         const allUser = onsnap.docs.map(item => item.data());
-        console.log('dfgh', allUser);
         setAllUsers(allUser);
       });
   }, []);
 
   const _onrender = ({item}: any) => {
-    console.log('3456789op;lkjhgfdsa', item);
     return (
       <TouchableOpacity
         onPress={() => {
@@ -46,7 +44,7 @@ export default function AlluserList() {
         style={styles.allUserView}>
         <View style={styles.profileImageView}>
           <Image
-            style={{height: '100%', width: '100%', resizeMode: 'cover'}}
+            style={styles.profileImageStyle}
             source={{uri: item.profileImage}}
           />
         </View>
@@ -59,25 +57,19 @@ export default function AlluserList() {
 
   return (
     <View style={{flex: 1}}>
-      <View style={{flexDirection: 'row', marginTop: normalize(20)}}>
+      <View style={styles.listStyle}>
         <Custombackbutton
           onPress={() => {
             navigation.goBack();
           }}
           style={styles.backbutton}
         />
-        <Text
-          style={{
-            fontSize: 20,
-            fontStyle: 'italic',
-            fontWeight: '800',
-            color: 'black',
-            marginTop: normalize(30),
-            marginLeft: normalize(15),
-          }}>
-          {'Select Contacts'}
-        </Text>
-        {/* <Image source={}/> */}
+        <View style={styles.inboxHeaderView}>
+          <Text style={styles.contactStyle}>{'Select Contacts'}</Text>
+          <TouchableOpacity>
+            <Image style={styles.searchImg} source={IMAGES.SEARCH_IMGAE} />
+          </TouchableOpacity>
+        </View>
       </View>
       <FlatList data={alluser} renderItem={_onrender} />
     </View>
@@ -130,5 +122,25 @@ const styles = StyleSheet.create({
   },
   backbutton: {
     marginLeft: normalize(10),
+  },
+  profileImageStyle: {height: '100%', width: '100%', resizeMode: 'cover'},
+  listStyle: {flexDirection: 'row', marginTop: normalize(20)},
+  contactStyle: {
+    fontSize: 20,
+    fontStyle: 'italic',
+    fontWeight: '800',
+    color: 'black',
+    marginTop: normalize(30),
+    marginLeft: normalize(15),
+  },
+  searchImg: {
+    height: vh(30),
+    width: vw(30),
+    resizeMode: 'contain',
+    marginTop: normalize(28),
+    marginLeft: normalize(110),
+  },
+  inboxHeaderView: {
+    flexDirection: 'row',
   },
 });

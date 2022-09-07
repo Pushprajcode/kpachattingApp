@@ -3,18 +3,19 @@ import React from 'react';
 import Chats from '../screens/chats';
 import LoginScreen from '../screens/logIn';
 import Status from '../screens/status';
+import COLORS from '../utiles/colors';
 
 const TopTabCategory = createMaterialTopTabNavigator();
 export default function TopTabCategoryFn() {
   return (
     <TopTabCategory.Navigator
       screenOptions={{
-        tabBarInactiveTintColor: 'white',
-        tabBarActiveTintColor: '#3B0000',
+        tabBarInactiveTintColor: COLORS.WHITE,
+        tabBarActiveTintColor: COLORS.LIGHT_RED,
         tabBarIndicatorStyle: {backgroundColor: 'transparent'},
         tabBarContentContainerStyle: {
-          backgroundColor: '#23aac8',
-          borderColor: '#247881',
+          backgroundColor: COLORS.SUMMER,
+          borderColor: COLORS.LIGHT_SKYBLUE,
           borderStartWidth: 2,
           borderEndWidth: 2,
         },

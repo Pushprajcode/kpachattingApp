@@ -11,6 +11,7 @@ function SplashScreen() {
   const navigation = useNavigation<any>();
 
   const {uidLogInuser} = useSelector((store: any) => store.LoginReducer);
+  console.log('kkk', uidLogInuser);
 
   useEffect(() => {
     setTimeout(() => {
@@ -18,6 +19,7 @@ function SplashScreen() {
         navigation.navigate(ROUTE_NAMES.HOME);
       } else navigation.replace(ROUTE_NAMES.LOG_IN_SCREEN);
     }, 1000);
+    // navigation.replace(ROUTE_NAMES.LOG_IN_SCREEN);
   }, []);
   return (
     <View style={styles.container}>

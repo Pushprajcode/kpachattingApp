@@ -21,4 +21,6 @@ export const IMAGES = {
   LINES_IMAGE: require('../assets/images/lines.png'),
   ARROW_IMAGE: require('../assets/images/arrow.png'),
   ALLUSER_IMAGE: require('../assets/images/comment.png'),
+  LOG_OUT: require('../assets/images/logout.png'),
+  SEARCH_IMGAE: require('../assets/images/search.png'),
 };

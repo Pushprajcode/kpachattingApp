@@ -20,6 +20,7 @@ import auth from '@react-native-firebase/auth';
 import ROUTE_NAMES from '../../router/routeNames';
 import firestore from '@react-native-firebase/firestore';
 import {useDispatch, useSelector} from 'react-redux';
+import Custombackbutton from '../../customComponents/custombackbutton';
 export default function SignUp() {
   const dispatch = useDispatch();
   const navigation = useNavigation<any>();
@@ -37,7 +38,8 @@ export default function SignUp() {
     auth()
       .createUserWithEmailAndPassword(phoneNoorEmail, password)
       .then(res => {
-        let uid = res.user._user.uid;
+        //@ts-ignore
+        let uid = res.user?._user.uid;
         dispatch({type: 'SET_USER_UID', payload: {uidLogInuser: uid}});
         navigation.navigate(ROUTE_NAMES.PROFILE, {
           name: name,
@@ -92,6 +94,10 @@ export default function SignUp() {
       <View style={styles.containerView}>
         {isModalVisible && <ProfilePopUp isModalVisible={isModalVisible} />}
         <Image style={styles.imgbackStyle} source={IMAGES.BACKGROUND_IMAGE} />
+        <Custombackbutton
+          style={styles.backButtonStyle}
+          onPress={() => navigation.goBack()}
+        />
         <Text style={styles.signUp}>{STRINGS.CREATE_ACCOUNT}</Text>
         <View style={styles.textinputView}>
           <CustomTextInput
@@ -214,4 +220,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: vw(15),
     marginBottom: normalize(7),
   },
+  backButtonStyle: {
+    position: 'absolute',
+    bottom: 235,
+    tintColor: COLORS.WHITE,
+    left: -7,
+  },
 });
+// import {StyleSheet, Text, View} from 'react-native';
+// import React from 'react';
+
+// export default function SignUp() {
+//   return (
+//     <View>
+//       <Text>{'jdfjfdj'}</Text>
+//     </View>
+//   );
+// }
+
+// const styles = StyleSheet.create({});

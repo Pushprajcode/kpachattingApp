@@ -20,6 +20,7 @@ import ImageCropPicker from 'react-native-image-crop-picker';
 import {useSelector} from 'react-redux';
 import Custombackbutton from '../../customComponents/custombackbutton';
 import firestore from '@react-native-firebase/firestore';
+import FastImage from 'react-native-fast-image';
 
 export default function Profile({route}: any) {
   const {name, phoneNoorEmail} = route.params;
@@ -73,14 +74,14 @@ export default function Profile({route}: any) {
       <View style={styles.profileView}>
         {image != '' ? (
           <TouchableOpacity>
-            <Image style={styles.profileImge} source={{uri: image}} />
+            <FastImage style={styles.profileImge} source={{uri: image}} />
           </TouchableOpacity>
         ) : (
           <Image style={styles.userImgStyle} source={IMAGES.USER} />
         )}
 
         <TouchableOpacity onPress={imgPicker} style={styles.imgpickerpress}>
-          <Image style={styles.img} source={IMAGES.EDIT_PROFILE} />
+          <FastImage style={styles.img} source={IMAGES.EDIT_PROFILE} />
         </TouchableOpacity>
       </View>
       <View style={styles.textinputView}>

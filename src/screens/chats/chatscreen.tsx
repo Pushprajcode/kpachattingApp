@@ -2,6 +2,7 @@ import {useSelector} from 'react-redux';
 import COLORS from '../../utiles/colors';
 import React, {useEffect, useState, useRef, useCallback} from 'react';
 import firestore from '@react-native-firebase/firestore';
+import FastImage from 'react-native-fast-image';
 import {
   Alert,
   StyleSheet,
@@ -105,7 +106,7 @@ const Chat = ({route}: any) => {
       received: false,
       createdAt: new Date().getTime(),
     };
-    console.log(message.length);
+
     if (message.length < 2) {
       firestore()
         .collection('Users')
@@ -127,7 +128,16 @@ const Chat = ({route}: any) => {
         .set({
           Name: loginData.name,
           id: uid,
-          lastmessage: mymessage,
+          lastMessage: mymessage,
+        });
+    } else {
+      firestore()
+        .collection('Users')
+        .doc(uid)
+        .collection('Inbox')
+        .doc(Uid)
+        .update({
+          lastMessage: mymessage,
         });
     }
 
@@ -286,7 +296,10 @@ const Chat = ({route}: any) => {
           <Image source={IMAGES.ARROW_IMAGE} style={styles.backButtonStyle} />
         </TouchableOpacity>
         <View style={styles.userImageStyle}>
-          <Image style={styles.backButtonStyle} source={{uri: profileImage}} />
+          <FastImage
+            style={styles.backButtonStyle}
+            source={{uri: profileImage}}
+          />
         </View>
         <View style={styles.userInfoView}>
           <Text style={styles.nameTextStyle}>{Name}</Text>
@@ -338,11 +351,11 @@ const Chat = ({route}: any) => {
                 }}
                 wrapperStyle={{
                   left: {
-                    backgroundColor: '#2eccdb',
+                    backgroundColor: COLORS.LIGHT_SKYBLUE,
                     right: normalize(45),
                   },
                   right: {
-                    backgroundColor: '#28a9c8',
+                    backgroundColor: COLORS.LIGHT_SKYBLUE,
                   },
                 }}
               />
@@ -367,11 +380,11 @@ const Chat = ({route}: any) => {
                 {...props}
                 timeTextStyle={{
                   left: {
-                    color: 'white',
+                    color: COLORS.WHITE,
                     fontSize: normalize(13),
                   },
                   right: {
-                    color: 'white',
+                    color: COLORS.WHITE,
                     fontSize: normalize(13),
                   },
                 }}
@@ -404,7 +417,7 @@ const styles = StyleSheet.create({
   },
 
   toolbar: {
-    backgroundColor: '#eaeeef',
+    backgroundColor: COLORS.WHITE,
     borderRadius: normalize(10),
     marginHorizontal: normalize(10),
     borderBottomWidth: normalize(1),
@@ -430,7 +443,7 @@ const styles = StyleSheet.create({
   },
   headerContainerView: {
     height: normalize(80),
-    backgroundColor: '#28a9c8',
+    backgroundColor: COLORS.LIGHT_SKYBLUE,
     marginTop: getStatusBarHeight(),
     alignItems: 'center',
     flexDirection: 'row',

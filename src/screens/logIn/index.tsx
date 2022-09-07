@@ -21,6 +21,7 @@ import {useDispatch} from 'react-redux';
 
 export default function LoginScreen() {
   const navigation = useNavigation<any>();
+  console.log('nac=vigstion', navigation);
   const [phoneNoorEmail, setPhoneNoorEmail] = React.useState('');
   const [phoneNoorEmailError, setphoneNoorEmailError] = React.useState('');
   const [password, setPassword] = React.useState('');
@@ -28,7 +29,7 @@ export default function LoginScreen() {
   const [showPassword, setShowPassword] = React.useState(false);
   const dispatch = useDispatch();
   const onpressRegister = () => {
-    navigation.navigate(ROUTE_NAMES.SIGN_Up);
+    navigation.navigate('SignUp');
   };
 
   const toastfun = () => {
@@ -38,6 +39,7 @@ export default function LoginScreen() {
     auth()
       .signInWithEmailAndPassword(phoneNoorEmail, password)
       .then(resp => {
+        //@ts-ignore
         let uid = resp.user?._user?.uid;
         console.log('uid------->', uid);
         navigation.navigate(ROUTE_NAMES.HOME, {uid});

@@ -14,6 +14,7 @@ import ROUTE_NAMES from '../../router/routeNames';
 import COLORS from '../../utiles/colors';
 import {IMAGES} from '../../utiles/images';
 import {normalize} from '../../utiles/dimensions';
+import FastImage from 'react-native-fast-image';
 
 export default function Chats({route}: any) {
   const navigation = useNavigation<any>();
@@ -51,14 +52,14 @@ export default function Chats({route}: any) {
           })
         }>
         <View style={styles.profileImageView}>
-          <Image
-            style={{height: '100%', width: '100%'}}
+          <FastImage
+            style={styles.profileImgStyle}
             source={{uri: item?.profileImage}}
           />
         </View>
         <View style={styles.userInfoView}>
           <Text style={styles.nameTextStyle}>{item?.Name}</Text>
-          <Text style={{color: 'red'}}>{item?.lastMessage?.text}</Text>
+          <Text style={styles.lastmessageStyle}>{item?.lastMessage?.text}</Text>
         </View>
       </TouchableOpacity>
     ) : null;
@@ -106,7 +107,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     left: 30,
     paddingVertical: 10,
-    color: '#40394A',
+    color: COLORS.WHITE,
   },
   profileImg: {
     height: 50,
@@ -145,5 +146,13 @@ const styles = StyleSheet.create({
     width: normalize(30),
     marginLeft: normalize(320),
     bottom: 30,
+  },
+  lastmessageStyle: {
+    color: COLORS.BLACK,
+    fontSize: 17,
+  },
+  profileImgStyle: {
+    height: '100%',
+    width: '100%',
   },
 });

@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
+import React from 'react';
 import TopTabCategoryFn from '../../router/toptabnavigation';
 import {IMAGES} from '../../utiles/images';
 import {firebase} from '@react-native-firebase/storage';
@@ -14,6 +14,7 @@ import {useNavigation} from '@react-navigation/native';
 import ROUTE_NAMES from '../../router/routeNames';
 import {useDispatch} from 'react-redux';
 import COLORS from '../../utiles/colors';
+import {vh, vw} from '../../utiles/dimensions';
 export default function HomeScreen() {
   const navigation = useNavigation<any>();
   const dispatch = useDispatch<any>();
@@ -23,9 +24,8 @@ export default function HomeScreen() {
       .signOut()
       .then(() => {
         console.log('Signed Out');
-        dispatch({type: 'userDetails', payload: {}});
-        dispatch({type: 'uid', payload: ''});
-
+        dispatch({type: 'SET_USER_UID', payload: {uidLogInuser: ''}});
+        // dispatch({type: 'uid', payload: ''});
         navigation.navigate(ROUTE_NAMES.LOG_IN_SCREEN);
       })
       .catch(e => {
@@ -36,7 +36,7 @@ export default function HomeScreen() {
     <View style={styles.headerView}>
       <Text style={styles.headingtxt}>{'KPA Chat'}</Text>
       <TouchableOpacity onPress={onpressSignOut}>
-        <Image style={styles.settingimg} source={IMAGES.SETTING_IMAGE} />
+        <Image style={styles.settingimg} source={IMAGES.LOG_OUT} />
       </TouchableOpacity>
       <TopTabCategoryFn />
     </View>
@@ -58,13 +58,15 @@ const styles = StyleSheet.create({
     top: 10,
   },
   settingimg: {
-    height: 20,
-    width: 20,
+    height: vh(28),
+    width: vw(28),
     resizeMode: 'contain',
     alignSelf: 'flex-end',
     bottom: 16,
-    right: 10,
-    tintColor: 'white',
+    right: 7,
+    fontSize: 18,
+    color: 'white',
+    tintColor: COLORS.WHITE,
   },
   touchable: {
     color: 'red',
